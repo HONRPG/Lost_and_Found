@@ -1,0 +1,509 @@
+:root {
+    --bg-color: #0f0c1b;
+    --card-bg: #1a162b;
+    --text-main: #f0f0f0;
+    --text-muted: #a09eb0;
+    --primary-gradient: linear-gradient(135deg, #00c3ff 0%, #b026ff 100%);
+    --border-color: #2d2640;
+    --status-lost: #ff4757;
+    --status-found: #2ed573;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Prompt', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* Navbar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(26, 22, 43, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-container img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #fff;
+    padding: 2px;
+}
+
+.logo-container h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 300;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #00c3ff;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* ระบบค้นหาและตัวกรอง */
+.search-section {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 40px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+input, select, textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 12px 15px;
+    border-radius: 8px;
+    outline: none;
+    flex: 1;
+    min-width: 150px;
+    font-size: 0.95rem;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #b026ff;
+}
+
+button {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* หน้าฟีดแสดงรายการ */
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    border-left: 4px solid #b026ff;
+    padding-left: 10px;
+}
+
+.feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #00c3ff;
+    box-shadow: 0 10px 20px rgba(0, 195, 255, 0.1);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.badge.found { background: rgba(46, 213, 115, 0.2); color: var(--status-found); }
+.badge.lost { background: rgba(255, 71, 87, 0.2); color: var(--status-lost); }
+
+.card h3 { margin: 0 0 10px 0; font-size: 1.2rem; }
+.card p { margin: 5px 0; color: var(--text-muted); font-size: 0.9rem; }
+
+.action-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: #00c3ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* ฟอร์มแจ้งข้อมูล */
+.form-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+.form-group label { font-size: 0.9rem; color: var(--text-muted); }
+
+.secret-warning {
+    color: #ff4757;
+    font-size: 0.8rem;
+    margin-top: -5px;
+}
+
+.file-input {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.full-width-btn-large {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ส่วนขอรับสิทธิ์ (Claim) */
+#claim-area {
+    display: none;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.claim-hint {
+    font-size: 0.85rem;
+    color: #b026ff;
+    margin: 0 0 10px 0;
+}
+
+.full-width-input {
+    width: 100%;
+}
+
+.full-width-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+}
+
+/* =========================================
+   ส่วนเสริมสำหรับหน้า Login / Register
+   ========================================= */
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    /* ไล่สีพื้นหลังให้ดูมีมิติมากขึ้นสำหรับหน้า Login */
+    background-image: radial-gradient(circle at top left, #1a162b, #0f0c1b);
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+.auth-card {
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fff;
+    padding: 2px;
+    margin-bottom: 10px;
+}
+
+.auth-header h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.8rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.auth-footer p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+/* =========================================
+   Custom Alert Popup (แทนที่ alert เดิม)
+   ========================================= */
+.custom-alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 12, 27, 0.85); /* สีพื้นหลังโปร่งแสง */
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+}
+
+.custom-alert-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    max-width: 350px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 195, 255, 0.15); /* เงาสีฟ้าเรืองแสง */
+    animation: slideUp 0.3s ease;
+}
+
+.custom-alert-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.custom-alert-title {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.custom-alert-msg {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.custom-alert-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    width: 100%;
+    transition: transform 0.2s, opacity 0.3s;
+}
+
+.custom-alert-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* =========================================
+   ส่วนเสริมสำหรับ Profile Menu
+   ========================================= */
+.profile-menu {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.profile-icon {
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    transition: border-color 0.3s;
+}
+
+.profile-icon:hover {
+    border-color: #00c3ff;
+}
+
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 130%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    width: 220px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+/* แสดง Dropdown เมื่อเอาเมาส์ชี้ */
+.profile-menu:hover .profile-dropdown {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.profile-dropdown p {
+    margin: 0 0 5px 0;
+    word-break: break-all;
+}
+
+.profile-dropdown hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 10px 0;
+}
+
+.logout-btn {
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--status-lost);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    width: 100%;
+    padding: 8px;
+    background-image: none;
+}
+
+.logout-btn:hover {
+    background: var(--status-lost);
+    color: white;
+}
+/* =========================================
+   Custom Alert Popup
+   ========================================= */
+.custom-alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 12, 27, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.custom-alert-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    max-width: 350px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 195, 255, 0.15);
+}
+
+.custom-alert-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.custom-alert-title {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.custom-alert-msg {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.custom-alert-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+}

@@ -1,12 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="js/index.js" defer></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ระบบบริหารจัดการและแจ้งของหาย-ของที่พบ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <script src="js/script.js"></script>
+    <nav>
+        <div class="logo-container">
+            <img src="images/logo.jpg" alt="Logo">
+            <h2>Lost & Found</h2>
+        </div>
+        <div class="nav-links" style="display: flex; align-items: center;">
+            <a href="index.html">หน้าแรก</a>
+            <a href="#report-section" id="nav-report">แจ้งของหาย/พบของ</a>
+            
+        <div class="nav-actions">
+            <!-- ส่วนที่ 1: โชว์ตอนที่ "ยังไม่ล็อกอิน" -->
+            <div id="nav-login">
+                <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
+            </div>
+
+            <!-- ส่วนที่ 2: แก้ตรงนี้ เติม margin-left: 30px; เข้าไปใน style เพื่อดันให้ห่างจากเมนูด้านซ้าย -->
+            <div id="nav-profile" style="display: none; align-items: center; gap: 15px; margin-left: 30px;">
+                <div style="text-align: right; line-height: 1.2;">
+                    <span id="profile-name" style="font-weight: bold; font-size: 0.9rem; color: #fff;">ผู้ใช้งาน</span><br>
+                    <span id="profile-email" style="font-size: 0.75rem; color: #aaa;">email@up.ac.th</span>
+                </div>
+                <button id="logout-btn" class="btn-outline" style="padding: 5px 15px; font-size: 0.8rem;">ออกจากระบบ</button>
+            </div>
+        </div>
+            
+            <!-- ไอคอนโปรไฟล์ (จะแสดงเมื่อล็อกอินแล้ว) -->
+            <div id="nav-profile" class="profile-menu" style="display: none;">
+                <div class="profile-icon">👤</div>
+                <div class="profile-dropdown">
+                    <p id="profile-name" style="font-weight: bold; color: #00c3ff;">กำลังโหลด...</p>
+                    <p id="profile-email" style="font-size: 0.8rem; color: var(--text-muted);">...</p>
+                    <hr>
+                    <button id="logout-btn" class="logout-btn">ออกจากระบบ</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="search-section">
+            <input type="text" placeholder="ค้นหาชื่อสิ่งของ...">
+            <select>
+                <option value="">ทุกหมวดหมู่</option>
+                <option value="electronics">อุปกรณ์อิเล็กทรอนิกส์</option>
+                <option value="documents">เอกสาร/บัตร</option>
+            </select>
+            <input type="date" title="วันที่">
+            <input type="text" placeholder="สถานที่">
+            <button id="search-btn">ค้นหา</button>
+        </div>
+
+        <h2 class="section-title">รายการล่าสุด</h2>
+        <div class="feed-grid">
+            <div class="card">
+                <span class="badge found">พบของ (Found)</span>
+                <h3>กระเป๋าสตางค์สีดำ</h3>
+                <p>📍 สถานที่: หน้าตึกคณะ ICT</p>
+                <p>🕒 เวลา: 18 ก.ย. 2569 - 14:30 น.</p>
+                <p>📌 สถานะ: อยู่ที่จุดรับฝาก</p>
+                <a href="javascript:void(0)" class="action-link" onclick="toggleClaim()">ดูรายละเอียด / ขอรับคืน</a>
+                
+                <div id="claim-area">
+                    <p class="claim-hint">ยื่นหลักฐานความเป็นเจ้าของ</p>
+                    <textarea placeholder="ระบุตำหนิลับเฉพาะ หรือข้อมูลบัตรด้านใน..." rows="3" class="full-width-input"></textarea>
+                    <button class="full-width-btn" onclick="submitClaim()">ยืนยันสิทธิ์</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="badge lost">ของหาย (Lost)</span>
+                <h3>ไอแพด Pro สีเทา</h3>
+                <p>📍 สถานที่: ห้องสมุด ชั้น 2</p>
+                <p>🕒 เวลา: 17 ก.ย. 2569 - 10:00 น.</p>
+                <p>📌 สถานะ: กำลังตามหา</p>
+                <a href="#" class="action-link">ดูรายละเอียด</a>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="report-section">แบบฟอร์มแจ้งข้อมูล</h2>
+        <div class="form-section">
+            <form id="report-form">
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label>ประเภทการแจ้ง</label>
+                        <select required>
+                            <option value="lost">แจ้งของหาย (Lost)</option>
+                            <option value="found">แจ้งของที่พบ (Found)</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-2">
+                        <label>ชื่อสิ่งของ</label>
+                        <input type="text" placeholder="เช่น กุญแจรถ, บัตรนิสิต" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label>วันเวลาที่เกิดเหตุ/พบเห็น</label>
+                        <input type="datetime-local" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>สถานที่</label>
+                        <input type="text" placeholder="จุดที่พบ หรือ จุดที่หาย" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>รายละเอียดสาธารณะ (ทุกคนมองเห็น)</label>
+                    <textarea rows="3" placeholder="ลักษณะภายนอกที่สังเกตได้ชัดเจน"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>ข้อมูลลับเฉพาะ (BR-01)</label>
+                    <div class="secret-warning">*สำหรับใช้ตรวจสอบคำขอ Claim เท่านั้น ห้ามเปิดเผยทั้งหมด</div>
+                    <textarea rows="3" placeholder="เช่น รหัสปลดล็อก, ตำหนิด้านใน, Serial Number" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>อัปโหลดรูปภาพ</label>
+                    <input type="file" accept="image/*" class="file-input">
+                </div>
+
+                <button type="submit" class="full-width-btn-large">โพสต์แจ้งข้อมูล</button>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

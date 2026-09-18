@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="th">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/register.js" defer></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก - Lost & Found</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+    
+    <div class="auth-wrapper">
+        <div class="auth-card card">
+            <div class="auth-header">
+                <h2>สมัครสมาชิก</h2>
+                <p>สำหรับนิสิตและบุคลากร</p>
+            </div>
+            
+            <form id="register-form" novalidate>
+                <div class="form-group">
+                    <label>ชื่อ-นามสกุล</label>
+                    <input type="text" id="reg-name" placeholder="ระบุชื่อ-นามสกุลจริง">
+                </div>
+                <div class="form-group">
+                    <label>อีเมลสถาบัน (ใช้ยืนยันตัวตน)</label>
+                    <input type="email" id="reg-email" placeholder="example@up.ac.th">
+                </div>
+                <div class="form-group">
+                    <label>เบอร์โทรศัพท์</label>
+                    <input type="tel" id="reg-phone" placeholder="08x-xxx-xxxx">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label>รหัสผ่าน</label>
+                        <input type="password" id="reg-pass" placeholder="ตั้งรหัสผ่าน">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>ยืนยันรหัสผ่าน</label>
+                        <input type="password" id="reg-confirm" placeholder="กรอกอีกครั้ง">
+                    </div>
+                </div>
+                
+                <button type="submit" class="full-width-btn-large">ยืนยันการสมัคร</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>มีบัญชีอยู่แล้ว? <a href="login.html" class="action-link">เข้าสู่ระบบ</a></p>
+            </div>
+        </div>
+    </div>
