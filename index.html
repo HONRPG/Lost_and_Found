@@ -1,13 +1,134 @@
 <!DOCTYPE html>
 <html lang="th">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="js/index.js" defer></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบบริหารจัดการและแจ้งของหาย-ของที่พบ</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="js/index.js" defer></script>
+    
+    <!-- เพิ่มไลบรารี Flatpickr สำหรับปฏิทิน -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+
+    <style>
+        /* CSS สำหรับ Modal แสดงรายละเอียด */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.7); 
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: #1e1e2f;
+            color: #fff;
+            margin: 5% auto; 
+            padding: 25px;
+            border-radius: 12px; 
+            width: 90%; 
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .close-btn {
+            color: #aaa; 
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-btn:hover { color: #fff; }
+        .modal-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .modal-details p { margin: 8px 0; font-size: 0.95rem; color: #ddd; }
+        .modal-details strong { color: #fff; }
+
+        /* CSS สำหรับปุ่ม "ดูรายละเอียด" และ "ขอรับคืน" */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-details, .btn-claim {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            color: #ffffff; 
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); 
+        }
+        .btn-details, .btn-claim {
+            background: linear-gradient(90deg, #00c6ff 0%, #a252ff 100%);
+        }
+        .btn-details:hover, .btn-claim:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
+
+        /* ช่อง Input ปฏิทิน */
+        input.flatpickr-input {
+            background-color: #2a2a3f !important;
+            color: #fff !important;
+            cursor: pointer;
+        }
+
+        /* CSS สำหรับกล่องอัปโหลดรูปภาพ */
+        .custom-file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            background-color: #2a2a3f;
+            border: 2px dashed #555;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #aaa;
+            text-align: center;
+            margin-top: 5px;
+        }
+        .custom-file-upload:hover {
+            border-color: #00c6ff;
+            color: #fff;
+            background-color: rgba(0, 198, 255, 0.05);
+        }
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .file-name-text {
+            font-size: 0.9rem;
+        }
+        .file-name-active {
+            color: #00c3ff;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -20,12 +141,9 @@
             <a href="#report-section" id="nav-report">แจ้งของหาย/พบของ</a>
             
         <div class="nav-actions">
-            <!-- ส่วนที่ 1: โชว์ตอนที่ "ยังไม่ล็อกอิน" -->
             <div id="nav-login">
                 <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
             </div>
-
-            <!-- ส่วนที่ 2: แก้ตรงนี้ เติม margin-left: 30px; เข้าไปใน style เพื่อดันให้ห่างจากเมนูด้านซ้าย -->
             <div id="nav-profile" style="display: none; align-items: center; gap: 15px; margin-left: 30px;">
                 <div style="text-align: right; line-height: 1.2;">
                     <span id="profile-name" style="font-weight: bold; font-size: 0.9rem; color: #fff;">ผู้ใช้งาน</span><br>
@@ -34,17 +152,6 @@
                 <button id="logout-btn" class="btn-outline" style="padding: 5px 15px; font-size: 0.8rem;">ออกจากระบบ</button>
             </div>
         </div>
-            
-            <!-- ไอคอนโปรไฟล์ (จะแสดงเมื่อล็อกอินแล้ว) -->
-            <div id="nav-profile" class="profile-menu" style="display: none;">
-                <div class="profile-icon">👤</div>
-                <div class="profile-dropdown">
-                    <p id="profile-name" style="font-weight: bold; color: #00c3ff;">กำลังโหลด...</p>
-                    <p id="profile-email" style="font-size: 0.8rem; color: var(--text-muted);">...</p>
-                    <hr>
-                    <button id="logout-btn" class="logout-btn">ออกจากระบบ</button>
-                </div>
-            </div>
         </div>
     </nav>
 
@@ -56,25 +163,23 @@
                 <option value="electronics">อุปกรณ์อิเล็กทรอนิกส์</option>
                 <option value="documents">เอกสาร/บัตร</option>
             </select>
-            <input type="date" title="วันที่">
+            <input type="text" id="search-date" placeholder="เลือกวันที่..." title="วันที่">
             <input type="text" placeholder="สถานที่">
             <button id="search-btn">ค้นหา</button>
         </div>
 
         <h2 class="section-title">รายการล่าสุด</h2>
-        <div class="feed-grid">
+        <div class="feed-grid" id="feed-grid">
+            
             <div class="card">
                 <span class="badge found">พบของ (Found)</span>
                 <h3>กระเป๋าสตางค์สีดำ</h3>
                 <p>📍 สถานที่: หน้าตึกคณะ ICT</p>
                 <p>🕒 เวลา: 18 ก.ย. 2569 - 14:30 น.</p>
                 <p>📌 สถานะ: อยู่ที่จุดรับฝาก</p>
-                <a href="javascript:void(0)" class="action-link" onclick="toggleClaim()">ดูรายละเอียด / ขอรับคืน</a>
-                
-                <div id="claim-area">
-                    <p class="claim-hint">ยื่นหลักฐานความเป็นเจ้าของ</p>
-                    <textarea placeholder="ระบุตำหนิลับเฉพาะ หรือข้อมูลบัตรด้านใน..." rows="3" class="full-width-input"></textarea>
-                    <button class="full-width-btn" onclick="submitClaim()">ยืนยันสิทธิ์</button>
+                <div class="card-actions">
+                    <button class="btn-details" onclick="openModal('กระเป๋าสตางค์สีดำ', 'พบของ (Found)', 'found', 'หน้าตึกคณะ ICT', '18 ก.ย. 2569 - 14:30 น.', 'อยู่ที่จุดรับฝาก', 'กระเป๋าสตางค์หนังสีดำพับครึ่ง ไม่มีรอยขาด', 'image_fdf824.png', true)">ดูรายละเอียด</button>
+                    <button class="btn-claim" onclick="openModal('กระเป๋าสตางค์สีดำ', 'พบของ (Found)', 'found', 'หน้าตึกคณะ ICT', '18 ก.ย. 2569 - 14:30 น.', 'อยู่ที่จุดรับฝาก', 'กระเป๋าสตางค์หนังสีดำพับครึ่ง ไม่มีรอยขาด', 'image_fdf824.png', true)">ขอรับคืน</button>
                 </div>
             </div>
 
@@ -84,7 +189,9 @@
                 <p>📍 สถานที่: ห้องสมุด ชั้น 2</p>
                 <p>🕒 เวลา: 17 ก.ย. 2569 - 10:00 น.</p>
                 <p>📌 สถานะ: กำลังตามหา</p>
-                <a href="#" class="action-link">ดูรายละเอียด</a>
+                <div class="card-actions">
+                    <button class="btn-details" onclick="openModal('ไอแพด Pro สีเทา', 'ของหาย (Lost)', 'lost', 'ห้องสมุด ชั้น 2', '17 ก.ย. 2569 - 10:00 น.', 'กำลังตามหา', 'ไอแพดใส่เคสสีดำ มีรอยขีดข่วนที่มุมซ้ายบน', '', false)">ดูรายละเอียด</button>
+                </div>
             </div>
         </div>
 
@@ -94,31 +201,32 @@
                 <div class="form-row">
                     <div class="form-group flex-1">
                         <label>ประเภทการแจ้ง</label>
-                        <select required>
+                        <select id="input-type" required>
                             <option value="lost">แจ้งของหาย (Lost)</option>
                             <option value="found">แจ้งของที่พบ (Found)</option>
                         </select>
                     </div>
                     <div class="form-group flex-2">
                         <label>ชื่อสิ่งของ</label>
-                        <input type="text" placeholder="เช่น กุญแจรถ, บัตรนิสิต" required>
+                        <input type="text" id="input-name" placeholder="เช่น กุญแจรถ, บัตรนิสิต" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group flex-1">
                         <label>วันเวลาที่เกิดเหตุ/พบเห็น</label>
-                        <input type="datetime-local" required>
+                        <input type="text" id="input-time" placeholder="คลิกเพื่อเลือกวันและเวลา..." required>
                     </div>
                     <div class="form-group flex-1">
                         <label>สถานที่</label>
-                        <input type="text" placeholder="จุดที่พบ หรือ จุดที่หาย" required>
+                        <input type="text" id="input-location" placeholder="จุดที่พบ หรือ จุดที่หาย" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>รายละเอียดสาธารณะ (ทุกคนมองเห็น)</label>
-                    <textarea rows="3" placeholder="ลักษณะภายนอกที่สังเกตได้ชัดเจน"></textarea>
+                    <!-- เพิ่มคำว่า (ไม่บังคับ) ตรงนี้ -->
+                    <label>รายละเอียดสาธารณะ (ทุกคนมองเห็น) <span style="color: #888; font-size: 0.85em; font-weight: normal;">(ไม่บังคับ)</span></label>
+                    <textarea id="input-desc" rows="3" placeholder="ลักษณะภายนอกที่สังเกตได้ชัดเจน"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -129,7 +237,12 @@
 
                 <div class="form-group">
                     <label>อัปโหลดรูปภาพ</label>
-                    <input type="file" accept="image/*" class="file-input">
+                    <input type="file" id="input-image" accept="image/*" style="display: none;">
+                    
+                    <label for="input-image" class="custom-file-upload">
+                        <span class="upload-icon">📁</span>
+                        <span id="file-name-display" class="file-name-text">คลิกเพื่ออัปโหลดรูปภาพ</span>
+                    </label>
                 </div>
 
                 <button type="submit" class="full-width-btn-large">โพสต์แจ้งข้อมูล</button>
@@ -137,5 +250,164 @@
         </div>
     </div>
 
+    <!-- HTML สำหรับ Modal Popup -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="Item Image" class="modal-image">
+            <h3 id="modalTitle" style="margin-top: 0;">ชื่อสิ่งของ</h3>
+            <span id="modalBadge" class="badge">สถานะ</span>
+            
+            <div class="modal-details" style="margin-top: 15px;">
+                <p><strong>📍 สถานที่:</strong> <span id="modalLocation"></span></p>
+                <p><strong>🕒 เวลา:</strong> <span id="modalTime"></span></p>
+                <p><strong>📌 สถานะ:</strong> <span id="modalStatus"></span></p>
+                <p><strong>📝 รายละเอียด:</strong> <span id="modalDesc"></span></p>
+            </div>
+            
+            <div id="modalClaimSection" style="display:none; margin-top:20px;">
+                <hr style="border-color: #333; margin-bottom: 15px;">
+                <p class="claim-hint" style="color: #ff9800; font-size: 0.9rem; margin-bottom: 10px;">ยื่นหลักฐานความเป็นเจ้าของ</p>
+                <textarea id="claimInput" placeholder="ระบุตำหนิลับเฉพาะ หรือข้อมูลบัตรด้านใน..." rows="3" class="full-width-input" style="width: 100%; box-sizing: border-box; background: #2a2a3f; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px;"></textarea>
+                <button class="full-width-btn" onclick="submitClaim()" style="width: 100%; margin-top: 10px; padding: 10px; background: #00c3ff; border: none; border-radius: 5px; color: #000; font-weight: bold; cursor: pointer;">ยืนยันสิทธิ์</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        flatpickr("#input-time", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            locale: "th", 
+            time_24hr: true, 
+            defaultDate: new Date()
+        });
+
+        flatpickr("#search-date", {
+            dateFormat: "Y-m-d",
+            locale: "th"
+        });
+
+        document.getElementById('input-image').addEventListener('change', function(e) {
+            const fileNameDisplay = document.getElementById('file-name-display');
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = 'เลือกไฟล์: ' + this.files[0].name;
+                fileNameDisplay.classList.add('file-name-active');
+            } else {
+                fileNameDisplay.textContent = 'คลิกเพื่ออัปโหลดรูปภาพ';
+                fileNameDisplay.classList.remove('file-name-active');
+            }
+        });
+
+        function openModal(title, type, typeClass, location, time, status, desc, imgSrc, isFound) {
+            document.getElementById('modalTitle').innerText = title;
+            const badge = document.getElementById('modalBadge');
+            badge.innerText = type;
+            badge.className = 'badge ' + typeClass;
+            
+            document.getElementById('modalLocation').innerText = location;
+            document.getElementById('modalTime').innerText = time;
+            document.getElementById('modalStatus').innerText = status;
+            // จัดการกรณีที่ผู้ใช้ไม่ได้กรอกรายละเอียด
+            document.getElementById('modalDesc').innerText = desc.trim() !== '' ? desc : 'ไม่มีรายละเอียดเพิ่มเติม';
+            
+            const imgElement = document.getElementById('modalImage');
+            if(imgSrc && imgSrc.trim() !== '') {
+                imgElement.src = imgSrc;
+                imgElement.style.display = 'block';
+            } else {
+                imgElement.style.display = 'none';
+            }
+
+            document.getElementById('modalClaimSection').style.display = isFound ? 'block' : 'none';
+            document.getElementById('itemModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+            document.getElementById('claimInput').value = '';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('itemModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function submitClaim() {
+            const claimText = document.getElementById('claimInput').value;
+            if(claimText.trim() === '') {
+                alert('กรุณาระบุข้อมูลหรือตำหนิลับเฉพาะเพื่อยืนยันตัวตน');
+                return;
+            }
+            alert('ส่งคำขอรับคืนเรียบร้อยแล้ว ระบบจะทำการตรวจสอบข้อมูลลับเฉพาะต่อไป');
+            closeModal();
+        }
+
+        document.getElementById('report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const typeValue = document.getElementById('input-type').value;
+            const name = document.getElementById('input-name').value;
+            const timeRaw = document.getElementById('input-time').value;
+            const location = document.getElementById('input-location').value;
+            const desc = document.getElementById('input-desc').value.replace(/'/g, "\\'");
+            
+            const imageInput = document.getElementById('input-image');
+            let imageUrl = '';
+            if (imageInput.files && imageInput.files[0]) {
+                imageUrl = URL.createObjectURL(imageInput.files[0]);
+            }
+
+            const isFound = (typeValue === 'found');
+            const typeLabel = isFound ? 'พบของ (Found)' : 'ของหาย (Lost)';
+            const statusLabel = isFound ? 'อยู่ที่จุดรับฝาก' : 'กำลังตามหา';
+            
+            const dateObj = new Date(timeRaw.replace(/-/g, '/')); 
+            const timeFormatted = `${dateObj.getDate()} ก.ย. ${dateObj.getFullYear() + 543} - ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')} น.`;
+
+            let actionButtonsHTML = '';
+            if (isFound) {
+                actionButtonsHTML = `
+                    <div class="card-actions">
+                        <button class="btn-details" onclick="openModal('${name}', '${typeLabel}', '${typeValue}', '${location}', '${timeFormatted}', '${statusLabel}', '${desc}', '${imageUrl}', true)">ดูรายละเอียด</button>
+                        <button class="btn-claim" onclick="openModal('${name}', '${typeLabel}', '${typeValue}', '${location}', '${timeFormatted}', '${statusLabel}', '${desc}', '${imageUrl}', true)">ขอรับคืน</button>
+                    </div>
+                `;
+            } else {
+                actionButtonsHTML = `
+                    <div class="card-actions">
+                        <button class="btn-details" onclick="openModal('${name}', '${typeLabel}', '${typeValue}', '${location}', '${timeFormatted}', '${statusLabel}', '${desc}', '${imageUrl}', false)">ดูรายละเอียด</button>
+                    </div>
+                `;
+            }
+
+            const newCard = document.createElement('div');
+            newCard.className = 'card';
+            
+            newCard.innerHTML = `
+                <span class="badge ${typeValue}">${typeLabel}</span>
+                <h3>${name}</h3>
+                <p>📍 สถานที่: ${location}</p>
+                <p>🕒 เวลา: ${timeFormatted}</p>
+                <p>📌 สถานะ: ${statusLabel}</p>
+                ${actionButtonsHTML}
+            `;
+
+            const feedGrid = document.getElementById('feed-grid');
+            feedGrid.insertBefore(newCard, feedGrid.firstChild);
+
+            this.reset();
+            document.querySelector("#input-time")._flatpickr.setDate(new Date());
+            
+            const fileNameDisplay = document.getElementById('file-name-display');
+            fileNameDisplay.textContent = 'คลิกเพื่ออัปโหลดรูปภาพ';
+            fileNameDisplay.classList.remove('file-name-active');
+            
+            alert('โพสต์แจ้งข้อมูลสำเร็จ!');
+            document.querySelector('.search-section').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
 </body>
 </html>
