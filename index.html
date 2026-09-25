@@ -107,6 +107,7 @@
         <h2 class="section-title">รายการล่าสุด</h2>
         <div class="feed-grid" id="feed-grid">
             
+            <!-- การ์ดตัวอย่างเริ่มต้น -->
             <div class="card" data-category="accessories" data-date="2026-09-18T14:30:00">
                 <span class="badge found">พบของ (Found)</span>
                 <h3>กระเป๋าสตางค์สีดำ</h3>
@@ -200,6 +201,7 @@
                 <p><strong>📝 รายละเอียด:</strong> <span id="modalDesc"></span></p>
             </div>
             
+            <!-- ส่วนฟอร์มยืนยันสิทธิ์ -->
             <div id="modalClaimSection" style="display:none; margin-top:20px;">
                 <hr style="border-color: #333; margin-bottom: 15px;">
                 <p class="claim-hint" style="color: #ff9800; font-size: 0.9rem; margin-bottom: 10px;">ยื่นหลักฐานความเป็นเจ้าของ</p>
@@ -209,7 +211,7 @@
         </div>
     </div>
 
-    <!-- HTML สำหรับ Modal แจ้งเตือนขอบคุณ (ใหม่) -->
+    <!-- HTML สำหรับ Modal แจ้งเตือนขอบคุณ -->
     <div id="successModal" class="modal" style="z-index: 2000;">
         <div class="modal-content" style="text-align: center; max-width: 400px; padding: 40px 20px;">
             <div style="font-size: 4rem; margin-bottom: 15px;">✅</div>
@@ -224,12 +226,12 @@
         flatpickr("#input-time", { enableTime: true, dateFormat: "Y-m-d H:i", locale: "th", time_24hr: true, defaultDate: new Date() });
         flatpickr("#search-date", { dateFormat: "Y-m-d", locale: "th" });
 
-        let currentClaimId = null; // ตัวแปรเก็บ ID ของการ์ดที่กำลังเปิดอยู่
+        let currentClaimId = null; 
 
-        // ฟังก์ชันโหลดและซ่อน/ลบโพสต์ที่หมดอายุ
+        // ฟังก์ชันโหลดและลบโพสต์ที่หมดอายุ
         function initializePosts() {
             const now = new Date();
-            const maxAgeMs = 14 * 24 * 60 * 60 * 1000; // 14 วัน
+            const maxAgeMs = 14 * 24 * 60 * 60 * 1000; 
 
             const staticCards = document.querySelectorAll('.feed-grid .card');
             staticCards.forEach(card => {
@@ -268,7 +270,7 @@
             }
         });
 
-        // ฟังก์ชันบีบอัดรูปภาพ
+        // บีบอัดรูปภาพ
         function compressImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -284,15 +286,9 @@
                         let height = img.height;
 
                         if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                         } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                         }
                         canvas.width = width;
                         canvas.height = height;
@@ -332,7 +328,7 @@
             const newCard = document.createElement('div');
             newCard.className = 'card';
             newCard.setAttribute('data-category', post.categoryValue);
-            newCard.setAttribute('data-date', post.dateStr); // เป็น Unique ID สำหรับใช้อ้างอิงลบการ์ด
+            newCard.setAttribute('data-date', post.dateStr); 
             
             newCard.innerHTML = `
                 <span class="badge ${post.typeValue}">${typeLabel}</span>
@@ -360,9 +356,8 @@
             });
         }
 
-        // เพิ่มการรับค่า uniqueId
         function openModal(title, type, typeClass, location, time, status, desc, imgSrc, isFound, uniqueId) {
-            currentClaimId = uniqueId; // บันทึก ID ของการ์ดใบนี้ไว้
+            currentClaimId = uniqueId; 
             document.getElementById('modalTitle').innerText = title;
             const badge = document.getElementById('modalBadge');
             badge.innerText = type;
@@ -401,22 +396,45 @@
             if (event.target == successModal) { closeSuccessModal(); }
         }
 
-        // ปรับปรุงฟังก์ชัน Submit Claim ใหม่
+        // ==========================================
+        // ฟังก์ชันจัดการตอนกดยืนยันสิทธิ์ (ส่งไป Admin)
+        // ==========================================
         function submitClaim() {
             const claimText = document.getElementById('claimInput').value;
             if(claimText.trim() === '') { 
                 alert('กรุณาระบุข้อมูลหรือตำหนิลับเฉพาะเพื่อยืนยันตัวตน'); 
                 return; 
             }
-            
-            // ปิด Modal ดูรายละเอียด และเปิด Modal ขอบคุณ
-            document.getElementById('itemModal').style.display = 'none';
-            document.getElementById('claimInput').value = '';
-            document.getElementById('successModal').style.display = 'block';
 
-            // ดำเนินการลบการ์ดที่ถูกอ้างอิง
             if (currentClaimId) {
-                // 1. ลบ HTML ออกจากหน้าจอ
+                let savedPosts = JSON.parse(localStorage.getItem('lf_posts')) || [];
+                let postToClaim = savedPosts.find(post => post.dateStr === currentClaimId);
+
+                // หากเป็นการ์ดตัวอย่างที่มากับ HTML (ไม่มีใน Local Storage) ให้เก็บค่าจากหน้าเว็บ
+                if (!postToClaim) {
+                    postToClaim = {
+                        name: document.getElementById('modalTitle').innerText,
+                        location: document.getElementById('modalLocation').innerText,
+                        timeRaw: document.getElementById('modalTime').innerText,
+                        imageUrl: document.getElementById('modalImage').src,
+                        dateStr: currentClaimId
+                    };
+                }
+
+                // สร้าง Object บันทึกคำขอเพื่อส่งไปหน้า Admin
+                const newClaimRequest = {
+                    ...postToClaim,
+                    claimNote: claimText,         // ตำหนิที่ผู้ใช้ระบุ
+                    claimDate: new Date().toISOString(), // เวลาที่กดส่งคำขอ
+                    status: 'pending'             // สถานะรอตรวจสอบ
+                };
+
+                // บันทึกคำขอลง Local Storage (Key: lf_claims)
+                let allClaims = JSON.parse(localStorage.getItem('lf_claims')) || [];
+                allClaims.push(newClaimRequest);
+                localStorage.setItem('lf_claims', JSON.stringify(allClaims));
+
+                // 1. ลบโพสต์ออกจากหน้าจอ
                 const cards = document.querySelectorAll('.feed-grid .card');
                 cards.forEach(card => {
                     if (card.getAttribute('data-date') === currentClaimId) {
@@ -424,13 +442,17 @@
                     }
                 });
 
-                // 2. ลบออกจาก Local Storage ด้วยเพื่อไม่ให้เด้งกลับมาตอนรีเฟรชหน้า
-                let savedPosts = JSON.parse(localStorage.getItem('lf_posts')) || [];
+                // 2. ลบออกจาก lf_posts เพื่อไม่ให้โหลดขึ้นมาใหม่ตอนรีเฟรช
                 savedPosts = savedPosts.filter(post => post.dateStr !== currentClaimId);
                 localStorage.setItem('lf_posts', JSON.stringify(savedPosts));
-                
-                currentClaimId = null;
             }
+
+            // ปิดหน้า Modal แจ้งรายละเอียด และโชว์ Modal ขอบคุณ
+            document.getElementById('itemModal').style.display = 'none';
+            document.getElementById('claimInput').value = '';
+            document.getElementById('successModal').style.display = 'block';
+            
+            currentClaimId = null;
         }
 
         document.getElementById('report-form').addEventListener('submit', async function(e) {
@@ -459,7 +481,7 @@
             }
 
             const dateObj = new Date(timeRaw.replace(/-/g, '/')); 
-            const isoDateString = dateObj.toISOString(); // ตัวนี้จะถูกใช้เป็น Unique ID
+            const isoDateString = dateObj.toISOString(); 
 
             const postData = {
                 typeValue, categoryValue, categoryText, name, timeRaw, location, desc, imageUrl, dateStr: isoDateString
