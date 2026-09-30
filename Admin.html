@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel — Lost & Found</title>
+    <title>Admin Dashboard — Lost &amp; Found</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/admin.css">
@@ -11,67 +11,122 @@
     <script src="js/admin.js" defer></script>
 </head>
 <body>
+
+    <!-- ===== NAVBAR ===== -->
     <nav>
         <div class="nav-brand">
             <img src="images/logo.jpg" alt="Logo" onerror="this.style.display='none'">
             <h2>Lost &amp; Found</h2>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
             <span class="admin-badge">⚙️ Admin Panel</span>
-            <span id="admin-email" style="color:#888;font-size:0.82rem;"></span>
-            <button id="admin-logout" style="background:none;border:1px solid #444;color:#aaa;padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Prompt',sans-serif;font-size:0.82rem;">ออกจากระบบ</button>
+            <span id="admin-email" style="color:#888; font-size:0.82rem;"></span>
+            <button id="admin-logout" class="admin-logout-btn">ออกจากระบบ</button>
         </div>
     </nav>
 
     <div class="admin-container">
+
+        <!-- ===== BLOCKED STATE ===== -->
         <div id="blocked-state" class="blocked-msg" style="display:none;">
-            <div style="font-size:4rem;margin-bottom:20px;">🚫</div>
+            <div class="blocked-icon">🚫</div>
             <h2>ไม่มีสิทธิ์เข้าถึง</h2>
-            <p style="color:#888;">หน้านี้สำหรับผู้ดูแลระบบเท่านั้น</p>
-            <a href="index.html" style="color:#00c3ff;">← กลับหน้าหลัก</a>
+            <p>หน้านี้สำหรับผู้ดูแลระบบเท่านั้น</p>
+            <a href="index.html" class="blocked-back-btn">← กลับหน้าหลัก</a>
         </div>
 
+        <!-- ===== ADMIN CONTENT ===== -->
         <div id="admin-content" style="display:none;">
-            <div class="admin-header">
-                <h1>⚙️ Admin Dashboard</h1>
-                <p>จัดการคำขอรับคืนสิ่งของ — ตรวจสอบและยืนยัน/ปฏิเสธคำขอ</p>
+
+            <!-- Hero Header -->
+            <div class="admin-hero">
+                <div class="admin-hero-left">
+                    <div class="admin-hero-icon">⚙️</div>
+                    <div>
+                        <h1 class="admin-hero-title">Admin <span class="hero-accent">Dashboard</span></h1>
+                        <p class="admin-hero-sub">จัดการคำขอรับคืนสิ่งของ — ตรวจสอบและยืนยัน/ปฏิเสธ</p>
+                    </div>
+                </div>
+                <div class="admin-hero-right">
+                    <button class="refresh-btn" onclick="loadClaims()">
+                        <span class="refresh-icon">🔄</span> รีเฟรชข้อมูล
+                    </button>
+                    <a href="index.html" class="home-link-btn">🏠 หน้าหลัก</a>
+                </div>
             </div>
 
+            <!-- Stats Pills -->
             <div class="stats-row" id="stats-row">
-                <div class="stat-card stat-total"><div class="stat-num" id="stat-total">—</div><div class="stat-label">คำขอทั้งหมด</div></div>
-                <div class="stat-card stat-pending"><div class="stat-num" id="stat-pending">—</div><div class="stat-label">รอตรวจสอบ</div></div>
-                <div class="stat-card stat-approved"><div class="stat-num" id="stat-approved">—</div><div class="stat-label">อนุมัติแล้ว</div></div>
-                <div class="stat-card stat-rejected"><div class="stat-num" id="stat-rejected">—</div><div class="stat-label">ถูกปฏิเสธ</div></div>
+                <div class="stat-pill stat-total-pill">
+                    <div class="stat-pill-icon">📋</div>
+                    <div class="stat-num" id="stat-total">—</div>
+                    <div class="stat-label">คำขอทั้งหมด</div>
+                </div>
+                <div class="stat-pill stat-pending-pill">
+                    <div class="stat-pill-icon">⏳</div>
+                    <div class="stat-num" id="stat-pending">—</div>
+                    <div class="stat-label">รอตรวจสอบ</div>
+                </div>
+                <div class="stat-pill stat-approved-pill">
+                    <div class="stat-pill-icon">✅</div>
+                    <div class="stat-num" id="stat-approved">—</div>
+                    <div class="stat-label">อนุมัติแล้ว</div>
+                </div>
+                <div class="stat-pill stat-rejected-pill">
+                    <div class="stat-pill-icon">❌</div>
+                    <div class="stat-num" id="stat-rejected">—</div>
+                    <div class="stat-label">ถูกปฏิเสธ</div>
+                </div>
             </div>
 
-            <div class="filter-bar">
-                <span style="color:#888;font-size:0.85rem;">กรองตามสถานะ:</span>
-                <button class="filter-btn active" onclick="filterClaims('all')" id="filter-all">ทั้งหมด</button>
-                <button class="filter-btn" onclick="filterClaims('pending')" id="filter-pending">⏳ รอตรวจสอบ</button>
-                <button class="filter-btn" onclick="filterClaims('approved')" id="filter-approved">✅ อนุมัติ</button>
-                <button class="filter-btn" onclick="filterClaims('rejected')" id="filter-rejected">❌ ปฏิเสธ</button>
-                <button style="margin-left:auto;background:linear-gradient(135deg,#00c3ff,#b026ff);border:none;color:#fff;padding:7px 18px;border-radius:20px;cursor:pointer;font-size:0.82rem;font-family:'Prompt',sans-serif;" onclick="loadClaims()">🔄 รีเฟรช</button>
+            <!-- Filter & Table Panel -->
+            <div class="claims-panel">
+                <div class="claims-panel-header">
+                    <div class="claims-panel-title">
+                        <span class="claims-panel-title-icon">📝</span>
+                        รายการคำขอรับคืนสิ่งของ
+                    </div>
+                    <div class="filter-tabs">
+                        <button class="filter-btn active" onclick="filterClaims('all')"    id="filter-all">🗂️ ทั้งหมด</button>
+                        <button class="filter-btn"        onclick="filterClaims('pending')" id="filter-pending">⏳ รอตรวจสอบ</button>
+                        <button class="filter-btn"        onclick="filterClaims('approved')" id="filter-approved">✅ อนุมัติ</button>
+                        <button class="filter-btn"        onclick="filterClaims('rejected')" id="filter-rejected">❌ ปฏิเสธ</button>
+                    </div>
+                </div>
+
+                <!-- Loading -->
+                <div id="claims-loading" class="state-box">
+                    <div class="state-icon">⏳</div>
+                    <p>กำลังโหลดข้อมูล...</p>
+                </div>
+
+                <!-- Empty -->
+                <div id="claims-empty" class="state-box empty-state" style="display:none;">
+                    <div class="state-icon">📭</div>
+                    <p>ไม่มีคำขอในระบบ</p>
+                </div>
+
+                <!-- Table -->
+                <div class="table-scroll">
+                    <table class="claims-table" id="claims-table" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>สิ่งของ</th>
+                                <th>ผู้ขอรับคืน</th>
+                                <th>ข้อมูลลับ (ของเจ้าของ)</th>
+                                <th>หลักฐานที่ยื่น</th>
+                                <th>วันที่ยื่น</th>
+                                <th>สถานะ</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="claims-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="table-wrapper">
-                <div id="claims-loading" style="text-align:center;padding:40px;color:#888;">⏳ กำลังโหลด...</div>
-                <div id="claims-empty" class="empty-state" style="display:none;"><div>📭</div><p>ไม่มีคำขอในระบบ</p></div>
-                <table class="claims-table" id="claims-table" style="display:none;">
-                    <thead>
-                        <tr>
-                            <th>สิ่งของ</th>
-                            <th>ผู้ขอรับคืน</th>
-                            <th>ข้อมูลลับ (เจ้าของสิ่งของ)</th>
-                            <th>หลักฐานที่ยื่น</th>
-                            <th>วันที่ยื่น</th>
-                            <th>สถานะ</th>
-                            <th>จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="claims-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        </div><!-- end admin-content -->
+    </div><!-- end admin-container -->
+
 </body>
 </html>

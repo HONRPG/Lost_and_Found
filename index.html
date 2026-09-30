@@ -1,179 +1,151 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบริหารจัดการและแจ้งของหาย-ของที่พบ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Lost & Found — ระบบบริหารจัดการของหาย-ของพบ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/index.css">
-    
-    <!-- นำเข้าไฟล์ JavaScript จากภายนอก -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="js/index.js" defer></script>
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="js/index.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
-
 </head>
+
 <body>
+
+    <!-- ===== NAVBAR ===== -->
     <nav>
         <div class="logo-container">
-            <img src="images/logo.jpg" alt="Logo">
-            <h2>Lost & Found</h2>
+            <img src="images/logo.jpg" alt="Logo" onerror="this.style.display='none'">
+            <h2>Lost &amp; Found</h2>
         </div>
         <div class="nav-links" style="display: flex; align-items: center;">
-            <a href="index.html">หน้าแรก</a>
-            <a href="#report-section" id="nav-report">แจ้งของหาย/พบของ</a>
-            
-        <div class="nav-actions">
-            <div id="nav-login">
-                <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
-            </div>
-            <div id="nav-profile" style="display: none; align-items: center; gap: 15px; margin-left: 30px;">
-                <div style="text-align: right; line-height: 1.2;">
-                    <span id="profile-name" style="font-weight: bold; font-size: 0.9rem; color: #fff;">ผู้ใช้งาน</span><br>
-                    <span id="profile-email" style="font-size: 0.75rem; color: #aaa;">email@up.ac.th</span>
+            <a href="index.html">🏠 หน้าแรก</a>
+            <a href="report.html" id="nav-report">📢 แจ้งของพบ</a>
+
+            <div class="nav-actions">
+                <div id="nav-login">
+                    <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
                 </div>
-                <button id="logout-btn" class="btn-outline" style="padding: 5px 15px; font-size: 0.8rem;">ออกจากระบบ</button>
+                <div id="nav-profile" style="display: none; align-items: center; gap: 15px; margin-left: 30px;">
+                    <div style="text-align: right; line-height: 1.2;">
+                        <span id="profile-name"
+                            style="font-weight: bold; font-size: 0.9rem; color: #fff;">ผู้ใช้งาน</span><br>
+                        <span id="profile-email" style="font-size: 0.75rem; color: #aaa;">email@up.ac.th</span>
+                    </div>
+                    <button id="logout-btn" class="btn-outline"
+                        style="padding: 5px 15px; font-size: 0.8rem;">ออกจากระบบ</button>
+                </div>
             </div>
-        </div>
         </div>
     </nav>
 
+    <!-- ===== HERO SECTION ===== -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">🎓 มหาวิทยาลัยพะเยา</div>
+            <h1 class="hero-title">ระบบแจ้งของหาย<span class="hero-title-accent"> & ของพบ</span></h1>
+            <p class="hero-subtitle">ช่วยเหลือชุมชนนิสิตและบุคลากรในการค้นหาและคืนสิ่งของ อย่างรวดเร็วและปลอดภัย</p>
+
+            <div class="stats-row">
+                <div class="stat-pill">
+                    <span class="stat-num" id="stat-total">—</span>
+                    <span class="stat-label">รายการทั้งหมด</span>
+                </div>
+                <div class="stat-pill stat-found">
+                    <span class="stat-num" id="stat-found">—</span>
+                    <span class="stat-label">สิ่งของที่พบ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="search-section">
-            <input type="text" placeholder="ค้นหาชื่อสิ่งของ...">
-            <select id="search-category" onchange="filterCategory(this.value)">
-                <option value="all">ทุกหมวดหมู่</option>
-                <option value="electronics">อุปกรณ์อิเล็กทรอนิกส์</option>
-                <option value="documents">เอกสาร/บัตร</option>
-                <option value="accessories">กระเป๋า/เครื่องประดับ</option>
-                <option value="others">อื่นๆ</option>
-            </select>
-            <input type="text" id="search-date" placeholder="เลือกวันที่..." title="วันที่">
-            <input type="text" placeholder="สถานที่">
-            <button type="button" id="search-btn" onclick="filterCategory(document.getElementById('search-category').value)">ค้นหา</button>
+
+        <!-- ===== FEED SECTION ===== -->
+        <div class="section-header">
+            <div class="section-header-left">
+                <h2 class="section-title">รายการล่าสุด</h2>
+                <span class="section-count" id="feed-count">กำลังโหลด...</span>
+            </div>
         </div>
 
-        <h2 class="section-title">รายการล่าสุด</h2>
         <div class="feed-grid" id="feed-grid">
-            
-            <!-- การ์ดตัวอย่างเริ่มต้น -->
+            <!-- ตัวอย่างการ์ด -->
             <div class="card" data-category="accessories" data-date="2026-09-18T14:30:00">
-                <span class="badge found">พบของ (Found)</span>
-                <h3>กระเป๋าสตางค์สีดำ</h3>
-                <span class="category-tag" onclick="filterCategory('accessories')">🏷️ กระเป๋า/เครื่องประดับ</span>
-                
-                <p>📍 สถานที่: หน้าตึกคณะ ICT</p>
-                <p>🕒 เวลา: 18 ก.ย. 2569 - 14:30 น.</p>
-                <p>📌 สถานะ: อยู่ที่จุดรับฝาก</p>
-                <div class="card-actions">
-                    <button class="btn-details" onclick="openModal('กระเป๋าสตางค์สีดำ', 'พบของ (Found)', 'found', 'หน้าตึกคณะ ICT', '18 ก.ย. 2569 - 14:30 น.', 'อยู่ที่จุดรับฝาก', 'กระเป๋าสตางค์หนังสีดำพับครึ่ง ไม่มีรอยขาด', 'image_fdf824.png', true, '2026-09-18T14:30:00')">ดูรายละเอียด</button>
-                    <button class="btn-claim" onclick="openModal('กระเป๋าสตางค์สีดำ', 'พบของ (Found)', 'found', 'หน้าตึกคณะ ICT', '18 ก.ย. 2569 - 14:30 น.', 'อยู่ที่จุดรับฝาก', 'กระเป๋าสตางค์หนังสีดำพับครึ่ง ไม่มีรอยขาด', 'image_fdf824.png', true, '2026-09-18T14:30:00')">ขอรับคืน</button>
+                <div class="card-top-bar found-bar"></div>
+                <div class="card-inner">
+                    <div class="card-header-row">
+                        <span class="badge found">✅ พบของ</span>
+                        <span class="card-date">18 ก.ย.</span>
+                    </div>
+                    <h3 class="card-title">กระเป๋าสตางค์สีดำ</h3>
+                    <div class="card-meta">
+                        <span class="category-tag" onclick="filterCategory('accessories')">👜
+                            กระเป๋า/เครื่องประดับ</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-row"><span class="info-icon">📍</span><span>หน้าตึกคณะ ICT</span></div>
+                        <div class="info-row"><span class="info-icon">🕒</span><span>18 ก.ย. 2569 · 14:30 น.</span>
+                        </div>
+                        <div class="info-row"><span class="info-icon">📌</span><span>อยู่ที่จุดรับฝาก</span></div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-details"
+                            onclick="openModal('กระเป๋าสตางค์สีดำ','พบของ (Found)','found','หน้าตึกคณะ ICT','18 ก.ย. 2569 - 14:30 น.','อยู่ที่จุดรับฝาก','กระเป๋าสตางค์หนังสีดำพับครึ่ง ไม่มีรอยขาด','image_fdf824.png',true,'2026-09-18T14:30:00')">🔍
+                            รายละเอียด</button>
+                        <button class="btn-claim"
+                            onclick="openModal('กระเป๋าสตางค์สีดำ','พบของ (Found)','found','หน้าตึกคณะ ICT','18 ก.ย. 2569 - 14:30 น.','อยู่ที่จุดรับฝาก','กระเป๋าสตางค์หนังสีดำพับครึ่ง ไม่มีรอยขาด','image_fdf824.png',true,'2026-09-18T14:30:00')">✋
+                            ขอรับคืน</button>
+                    </div>
                 </div>
             </div>
-
         </div>
 
-        <h2 class="section-title" id="report-section">แบบฟอร์มแจ้งข้อมูล</h2>
-        <div class="form-section">
-            <form id="report-form">
-                <div class="form-row">
-                    <div class="form-group flex-1">
-                        <label>ประเภทการแจ้ง</label>
-                        <select id="input-type" required>
-                            <option value="Found">แจ้งของที่พบ (Found)</option>
-                            <option value="Lost">แจ้งของหาย (Lost)</option>
-                        </select>
-                    </div>
-                    <div class="form-group flex-1">
-                        <label>หมวดหมู่สิ่งของ</label>
-                        <select id="input-category" required>
-                            <option value="electronics">อุปกรณ์อิเล็กทรอนิกส์</option>
-                            <option value="documents">เอกสาร/บัตร</option>
-                            <option value="accessories">กระเป๋า/เครื่องประดับ</option>
-                            <option value="others">อื่นๆ</option>
-                        </select>
-                    </div>
-                    <div class="form-group flex-2">
-                        <label>ชื่อสิ่งของ</label>
-                        <input type="text" id="input-name" placeholder="เช่น กุญแจรถ, บัตรนิสิต" required>
-                    </div>
+        <!-- ===== MODAL รายละเอียด ===== -->
+        <div id="itemModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <img id="modalImage" src="" alt="Item Image" class="modal-image">
+                <h3 id="modalTitle" style="margin-top: 0;">ชื่อสิ่งของ</h3>
+                <span id="modalBadge" class="badge">สถานะ</span>
+
+                <div class="modal-details" style="margin-top: 15px;">
+                    <p><strong>📍 สถานที่:</strong> <span id="modalLocation"></span></p>
+                    <p><strong>🕒 เวลา:</strong> <span id="modalTime"></span></p>
+                    <p><strong>📌 สถานะ:</strong> <span id="modalStatus"></span></p>
+                    <p><strong>📝 รายละเอียด:</strong> <span id="modalDesc"></span></p>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group flex-1">
-                        <label>วันเวลาที่เกิดเหตุ/พบเห็น</label>
-                        <input type="text" id="input-time" placeholder="คลิกเพื่อเลือกวันและเวลา...">
-                    </div>
-                    <div class="form-group flex-1">
-                        <label>สถานที่</label>
-                        <input type="text" id="input-location" placeholder="จุดที่พบ หรือ จุดที่หาย" required>
-                    </div>
+                <div id="modalClaimSection" style="display:none; margin-top:20px;">
+                    <hr style="border-color: #333; margin-bottom: 15px;">
+                    <p class="claim-hint">✋ ยื่นหลักฐานความเป็นเจ้าของ</p>
+                    <textarea id="claimInput" placeholder="ระบุตำหนิลับเฉพาะ หรือข้อมูลบัตรด้านใน..." rows="3"
+                        class="full-width-input"
+                        style="width: 100%; box-sizing: border-box; background: #2a2a3f; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px;"></textarea>
+                    <button class="full-width-btn" onclick="submitClaim()"
+                        style="width: 100%; margin-top: 10px; padding: 10px; background: linear-gradient(90deg, #00c6ff 0%, #a252ff 100%); border: none; border-radius: 5px; color: #fff; font-weight: bold; cursor: pointer; transition: 0.3s;">ยืนยันสิทธิ์</button>
                 </div>
-
-                <div class="form-group">
-                    <label>รายละเอียดสาธารณะ (ทุกคนมองเห็น) <span style="color: #888; font-size: 0.85em; font-weight: normal;">(ไม่บังคับ)</span></label>
-                    <textarea id="input-desc" rows="3" placeholder="ลักษณะภายนอกที่สังเกตได้ชัดเจน"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>ข้อมูลลับเฉพาะ (BR-01)</label>
-                    <div class="secret-warning">*สำหรับใช้ตรวจสอบคำขอ Claim เท่านั้น ห้ามเปิดเผยทั้งหมด</div>
-                    <textarea rows="3" placeholder="เช่น รหัสปลดล็อก, ตำหนิด้านใน, Serial Number" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>อัปโหลดรูปภาพ</label>
-                    <input type="file" id="input-image" accept="image/*" style="display: none;">
-                    
-                    <label for="input-image" class="custom-file-upload">
-                        <span class="upload-icon">📁</span>
-                        <span id="file-name-display" class="file-name-text">คลิกเพื่ออัปโหลดรูปภาพ</span>
-                    </label>
-                </div>
-
-                <button type="submit" class="full-width-btn-large">โพสต์แจ้งข้อมูล</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- HTML สำหรับ Modal Popup แสดงรายละเอียด -->
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <img id="modalImage" src="" alt="Item Image" class="modal-image">
-            <h3 id="modalTitle" style="margin-top: 0;">ชื่อสิ่งของ</h3>
-            <span id="modalBadge" class="badge">สถานะ</span>
-            
-            <div class="modal-details" style="margin-top: 15px;">
-                <p><strong>📍 สถานที่:</strong> <span id="modalLocation"></span></p>
-                <p><strong>🕒 เวลา:</strong> <span id="modalTime"></span></p>
-                <p><strong>📌 สถานะ:</strong> <span id="modalStatus"></span></p>
-                <p><strong>📝 รายละเอียด:</strong> <span id="modalDesc"></span></p>
-            </div>
-            
-            <!-- ส่วนฟอร์มยืนยันสิทธิ์ -->
-            <div id="modalClaimSection" style="display:none; margin-top:20px;">
-                <hr style="border-color: #333; margin-bottom: 15px;">
-                <p class="claim-hint" style="color: #ff9800; font-size: 0.9rem; margin-bottom: 10px;">ยื่นหลักฐานความเป็นเจ้าของ</p>
-                <textarea id="claimInput" placeholder="ระบุตำหนิลับเฉพาะ หรือข้อมูลบัตรด้านใน..." rows="3" class="full-width-input" style="width: 100%; box-sizing: border-box; background: #2a2a3f; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px;"></textarea>
-                <button class="full-width-btn" onclick="submitClaim()" style="width: 100%; margin-top: 10px; padding: 10px; background: linear-gradient(90deg, #00c6ff 0%, #a252ff 100%); border: none; border-radius: 5px; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); font-weight: bold; cursor: pointer; transition: 0.3s;">ยืนยันสิทธิ์</button>
             </div>
         </div>
-    </div>
 
-    <!-- HTML สำหรับ Modal แจ้งเตือนขอบคุณ -->
-    <div id="successModal" class="modal" style="z-index: 2000;">
-        <div class="modal-content" style="text-align: center; max-width: 400px; padding: 40px 20px;">
-            <div style="font-size: 4rem; margin-bottom: 15px;">✅</div>
-            <h2 style="margin-top: 0; color: #00c3ff;">ขอบคุณครับ!</h2>
-            <p style="color: #ddd; font-size: 1rem; margin-bottom: 25px;">ส่งคำขอรับคืนเรียบร้อยแล้ว<br>ระบบจะทำการตรวจสอบข้อมูลลับเฉพาะต่อไป</p>
-            <button class="full-width-btn" onclick="closeSuccessModal()" style="width: 100%; padding: 12px; background: linear-gradient(90deg, #00c6ff 0%, #a252ff 100%); border: none; border-radius: 8px; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); font-weight: bold; font-size: 1rem; cursor: pointer;">ตกลง</button>
+        <!-- ===== MODAL สำเร็จ ===== -->
+        <div id="successModal" class="modal" style="z-index: 2000;">
+            <div class="modal-content" style="text-align: center; max-width: 400px; padding: 40px 20px;">
+                <div style="font-size: 4rem; margin-bottom: 15px;">✅</div>
+                <h2 style="margin-top: 0; color: #00c3ff;">ขอบคุณครับ!</h2>
+                <p style="color: #ddd; font-size: 1rem; margin-bottom: 25px;">
+                    ส่งคำขอรับคืนเรียบร้อยแล้ว<br>ระบบจะทำการตรวจสอบข้อมูลลับเฉพาะต่อไป</p>
+                <button class="full-width-btn" onclick="closeSuccessModal()"
+                    style="width: 100%; padding: 12px; background: linear-gradient(90deg, #00c6ff 0%, #a252ff 100%); border: none; border-radius: 8px; color: #fff; font-weight: bold; font-size: 1rem; cursor: pointer;">ตกลง</button>
+            </div>
         </div>
-    </div>
+
 </body>
+
 </html>

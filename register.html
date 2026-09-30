@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="th">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/register.js" defer></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +7,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/register.js" defer></script>
 </head>
 <body class="auth-page">
-    
+
     <div class="auth-wrapper">
         <div class="auth-card card">
             <div class="auth-header">
                 <h2>สมัครสมาชิก</h2>
                 <p>สำหรับนิสิตและบุคลากร</p>
             </div>
-            
+
             <form id="register-form" novalidate>
                 <div class="form-group">
                     <label>ชื่อ-นามสกุล</label>
@@ -32,23 +32,53 @@
                     <label>เบอร์โทรศัพท์</label>
                     <input type="tel" id="reg-phone" placeholder="08x-xxx-xxxx">
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group flex-1">
                         <label>รหัสผ่าน</label>
-                        <input type="password" id="reg-pass" placeholder="ตั้งรหัสผ่าน">
+                        <div class="password-wrapper">
+                            <input type="password" id="reg-pass" placeholder="ตั้งรหัสผ่าน">
+                            <span class="toggle-password" onclick="togglePassword('reg-pass', this)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </span>
+                        </div>
                     </div>
                     <div class="form-group flex-1">
                         <label>ยืนยันรหัสผ่าน</label>
-                        <input type="password" id="reg-confirm" placeholder="กรอกอีกครั้ง">
+                        <div class="password-wrapper">
+                            <input type="password" id="reg-confirm" placeholder="กรอกอีกครั้ง">
+                            <span class="toggle-password" onclick="togglePassword('reg-confirm', this)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </span>
+                        </div>
                     </div>
                 </div>
-                
-                <button type="submit" class="full-width-btn-large">ยืนยันการสมัคร</button>
+
+                <button type="submit" style="
+                    display: block;
+                    width: 100%;
+                    margin-top: 15px;
+                    padding: 14px;
+                    background: linear-gradient(135deg, #00c3ff 0%, #b026ff 100%);
+                    color: #ffffff;
+                    -webkit-text-fill-color: #ffffff;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    font-family: 'Prompt', sans-serif;
+                    letter-spacing: 0.5px;
+                    transition: opacity 0.3s, transform 0.2s;
+                    box-shadow: 0 4px 15px rgba(0, 195, 255, 0.25);
+                ">ยืนยันการสมัคร</button>
             </form>
-            
+
             <div class="auth-footer">
                 <p>มีบัญชีอยู่แล้ว? <a href="login.html" class="action-link">เข้าสู่ระบบ</a></p>
             </div>
         </div>
     </div>
+
+</body>
+</html>

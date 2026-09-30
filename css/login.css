@@ -1,11 +1,15 @@
 /* ==========================================
    Login / Register Page Styles — Lost & Found
    ========================================== */
+
+/* แก้ไข: ใช้ flex-start แทน center เพื่อให้ content ยาวกว่า viewport scroll ได้ปกติ
+   และปุ่ม submit ไม่หายไปใต้ viewport */
 .auth-page {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     min-height: 100vh;
+    padding: 40px 0;
     background-image: radial-gradient(circle at top left, #1a162b, #0f0c1b);
 }
 
@@ -55,3 +59,64 @@
 }
 
 .auth-footer p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+
+/* ---- Password Toggle Wrapper ---- */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    padding-right: 40px;
+    width: 100%;
+    flex: 1;
+    min-width: 0;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+    flex-shrink: 0;
+}
+
+.toggle-password:hover {
+    color: #00c3ff;
+}
+
+/* ---- Fix: override global input flex so auth-page inputs stay in place ---- */
+.auth-card input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+.auth-card form button[type="submit"] {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    background: linear-gradient(135deg, #00c3ff 0%, #b026ff 100%);
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Prompt', sans-serif;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+.auth-card form button[type="submit"]:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}

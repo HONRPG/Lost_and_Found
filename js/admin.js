@@ -1,4 +1,4 @@
-﻿// ==========================================
+// ==========================================
 // Admin.js — Lost & Found Admin Panel
 // ==========================================
 const SUPABASE_URL = 'https://cpqbtswczohzzswbxteh.supabase.co';
@@ -103,19 +103,19 @@ function renderClaims(claims) {
 
         const row = document.createElement('tr');
         row.setAttribute('data-claim-id', claim.claim_id);
-        row.innerHTML =
+row.innerHTML =
             '<td>' +
             '<div class="item-name">' + esc(item?.item_name || '—') + '</div>' +
             '<div class="item-loc">📍 ' + esc(item?.location || '-') + '</div>' +
-            (item?.image_url ? '<img src="' + esc(item.image_url) + '" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin-top:6px;" onerror="this.style.display=\'none\'">' : '') +
+            (item?.image_url ? '<img src="' + esc(item.image_url) + '" class="item-thumb" onerror="this.style.display=\'none\'">' : '') +
             '</td>' +
-            '<td><div style="color:#ddd;font-size:0.85rem;">' + esc(claim.user_id || '—') + '</div></td>' +
+            '<td><div class="user-id-text">' + esc(claim.user_id || '—') + '</div></td>' +
             '<td>' +
             '<div class="secret-note" id="secret-' + claim.claim_id + '" style="display:none;">' + esc(item?.secret_details || '(ไม่มีข้อมูลลับ)') + '</div>' +
             '<button class="secret-toggle" onclick="toggleSecret(\'' + claim.claim_id + '\')">👁 ดูข้อมูลลับ</button>' +
             '</td>' +
             '<td><div class="claim-note-text">' + esc(claim.proof_details || '—') + '</div></td>' +
-            '<td style="color:#888;font-size:0.82rem;">' + fmt(claim.claim_datetime) + '</td>' +
+            '<td><span class="claim-date">' + fmt(claim.claim_datetime) + '</span></td>' +
             '<td><span class="status-pill ' + claim.claim_status + '">' + statusLabel + '</span></td>' +
             '<td>' +
             (isPending ?
@@ -123,7 +123,7 @@ function renderClaims(claims) {
                 '<button class="btn-approve" onclick="approveClaim(\'' + claim.claim_id + '\', \'' + (item?.item_id || '') + '\')">✅ อนุมัติ</button>' +
                 '<button class="btn-reject" onclick="rejectClaim(\'' + claim.claim_id + '\', \'' + (item?.item_id || '') + '\')">❌ ปฏิเสธ</button>' +
                 '</div>'
-                : '<span style="color:#555;font-size:0.82rem;">ดำเนินการแล้ว</span>') +
+                : '<span class="done-label">ดำเนินการแล้ว</span>') +
             '</td>';
         tbody.appendChild(row);
     });
