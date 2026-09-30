@@ -73,7 +73,17 @@ if (loginForm) { // ตรวจสอบว่าอยู่หน้า Login
                 return;
             }
 
-            showCustomAlert('เข้าสู่ระบบสำเร็จ!\nกำลังพากลับไปหน้าหลัก...', 'index.html', true);
+            // ตรวจสอบว่าเป็น Admin หรือไม่
+            const user = data.user;
+            const fullName = (user.user_metadata?.full_name || user.user_metadata?.name || '').toLowerCase();
+            const emailLower = (user.email || '').toLowerCase();
+            const isAdmin = fullName.includes('admin') || emailLower.includes('admin');
+
+            if (isAdmin) {
+                showCustomAlert('ยินดีต้อนรับ Admin!\nกำลังพาไปยังหน้าจัดการระบบ...', 'Admin.html', true);
+            } else {
+                showCustomAlert('เข้าสู่ระบบสำเร็จ!\nกำลังพากลับไปหน้าหลัก...', 'index.html', true);
+            }
 
         } catch (err) {
             submitBtn.innerText = 'เข้าสู่ระบบ';

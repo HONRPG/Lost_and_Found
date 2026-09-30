@@ -1,0 +1,140 @@
+/* ==========================================
+   Index Page Styles — Lost & Found
+   ========================================== */
+
+/* ---- Feed / Cards ---- */
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    border-left: 4px solid #b026ff;
+    padding-left: 10px;
+}
+
+.feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #00c3ff;
+    box-shadow: 0 10px 20px rgba(0, 195, 255, 0.1);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.badge.found { background: rgba(46, 213, 115, 0.2); color: var(--status-found); }
+.badge.lost  { background: rgba(255, 71, 87, 0.2);  color: var(--status-lost);  }
+
+.card h3 { margin: 0 0 10px 0; font-size: 1.2rem; }
+.card p  { margin: 5px 0; color: var(--text-muted); font-size: 0.9rem; }
+
+.category-tag {
+    display: inline-block;
+    background-color: #3a3a5a;
+    color: #ddd;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #555;
+}
+
+.category-tag:hover { background-color: #00c3ff; color: #000; border-color: #00c3ff; }
+
+/* ---- Card Action Buttons ---- */
+.card-actions { display: flex; gap: 10px; margin-top: 15px; }
+.btn-details, .btn-claim {
+    flex: 1; padding: 10px 12px; border-radius: 8px;
+    font-family: inherit; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; text-align: center; transition: all 0.3s ease;
+    border: none; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    background: linear-gradient(90deg, #00c6ff 0%, #a252ff 100%);
+}
+.btn-details:hover, .btn-claim:hover { opacity: 0.85; transform: translateY(-2px); }
+
+/* ---- Search Filter Bar ---- */
+.search-section {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 40px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* ---- Report Form ---- */
+.form-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.form-row { display: flex; gap: 20px; flex-wrap: wrap; }
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+.form-group label { font-size: 0.9rem; color: var(--text-muted); }
+
+.secret-warning { color: #ff4757; font-size: 0.8rem; margin-top: -5px; }
+
+.full-width-btn-large { width: 100%; margin-top: 10px; }
+.full-width-input { width: 100%; }
+.full-width-btn { width: 100%; margin-top: 10px; padding: 8px; }
+
+.claim-hint { font-size: 0.85rem; color: #b026ff; margin: 0 0 10px 0; }
+
+/* ---- File Upload ---- */
+.custom-file-upload {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 30px 20px; background-color: #2a2a3f;
+    border: 2px dashed #555; border-radius: 8px;
+    cursor: pointer; transition: all 0.3s ease;
+    color: #aaa; text-align: center; margin-top: 5px;
+}
+.custom-file-upload:hover { border-color: #00c6ff; color: #fff; background-color: rgba(0,198,255,0.05); }
+.upload-icon { font-size: 2rem; margin-bottom: 10px; }
+.file-name-text { font-size: 0.9rem; }
+.file-name-active { color: #00c3ff; font-weight: 500; }
+
+input.flatpickr-input { background-color: #2a2a3f !important; color: #fff !important; cursor: pointer; }
+
+/* ---- Detail Modal ---- */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+.modal-content { background-color: #1e1e2f; color: #fff; margin: 5% auto; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; }
+.close-btn { color: #aaa; position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.close-btn:hover { color: #fff; }
+.modal-image { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; display: none; }
+.modal-details p { margin: 8px 0; font-size: 0.95rem; color: #ddd; }
+.modal-details strong { color: #fff; }
