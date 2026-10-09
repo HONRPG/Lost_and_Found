@@ -139,14 +139,23 @@ function toggleSecret(claimId) {
 }
 
 async function approveClaim(claimId, itemId) {
-    if (!confirm('ยืนยันการอนุมัติคำขอนี้?')) return;
+    if (!confirm('ยืนยันการอนุมัติคำขอนี้? (ระบบจะลบข้อมูลที่เกี่ยวข้องทั้งหมดออกจากฐานข้อมูล)')) return;
     if (!supabaseClient) return;
-    const { error: ce } = await supabaseClient.from('claims').update({ claim_status: 'approved' }).eq('claim_id', claimId);
-    if (ce) { alert('เกิดข้อผิดพลาด: ' + ce.message); return; }
+    
     if (itemId) {
-        await supabaseClient.from('items').update({ item_status: 'approved' }).eq('item_id', itemId);
+        // 1. ลบคำขอ (claims) ทั้งหมดที่เกี่ยวข้องกับ item นี้ก่อน เพื่อไม่ให้ติด Foreign Key
+        await supabaseClient.from('claims').delete().eq('item_id', itemId);
+        // 2. ลบสิ่งของ (items) ออกจากฐานข้อมูล
+        const { error: itemError } = await supabaseClient.from('items').delete().eq('item_id', itemId);
+        if (itemError) {
+            alert('เกิดข้อผิดพลาดในการลบสิ่งของ: ' + itemError.message);
+            return;
+        }
+    } else {
+        await supabaseClient.from('claims').delete().eq('claim_id', claimId);
     }
-    showToast('✅ อนุมัติคำขอเรียบร้อยแล้ว');
+    
+    showToast('✅ อนุมัติและลบข้อมูลเรียบร้อยแล้ว');
     await loadClaims();
     filterClaims(currentFilter);
 }
