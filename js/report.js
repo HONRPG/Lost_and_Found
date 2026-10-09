@@ -7,6 +7,26 @@ const SUPABASE_ANON_KEY = 'sb_publishable_ajvfwZ96n4jaFd-2GlGxAQ_F20twafw';
 let supabaseClient = null;
 let currentUser = null;
 
+// ==========================================
+// CATEGORY PICKER — sync กับ hidden input
+// ==========================================
+function pickCategory(value, btnEl) {
+    document.querySelectorAll('.cat-pick-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === value);
+    });
+    const input = document.getElementById('input-category');
+    if (input) input.value = value;
+}
+
+// sync showcase bar ด้วย (ถ้ามี)
+function selectCategory(value, btnEl) {
+    document.querySelectorAll('.cat-showcase-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === value);
+    });
+    pickCategory(value, btnEl);
+}
+
+
 window.addEventListener('DOMContentLoaded', async () => {
     if (typeof window.supabase !== 'undefined') {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -21,7 +41,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             time_24hr: true,
             defaultDate: new Date(),
             maxDate: new Date(),
-            onOpen: function(selectedDates, dateStr, instance) {
+            onOpen: function (selectedDates, dateStr, instance) {
                 instance.set('maxDate', new Date());
             }
         });
@@ -56,7 +76,7 @@ function renderNavProfile() {
         if (navLogin) navLogin.style.display = 'none';
         if (navProfile) navProfile.style.display = 'flex';
         const profileEmail = document.getElementById('profile-email');
-        const profileName  = document.getElementById('profile-name');
+        const profileName = document.getElementById('profile-name');
         if (profileEmail) profileEmail.textContent = currentUser.email || '';
         const meta = currentUser.user_metadata;
         if (profileName) profileName.textContent = meta?.full_name || meta?.name || currentUser.email?.split('@')[0] || 'ผู้ใช้งาน';
@@ -133,13 +153,13 @@ function setupReportForm() {
         submitBtn.disabled = true;
         submitBtn.textContent = '⏳ กำลังบันทึก...';
 
-        const typeValue   = document.getElementById('input-type').value;
-        const catValue    = document.getElementById('input-category').value;
-        const name        = document.getElementById('input-name').value.trim();
-        let   timeRaw     = document.getElementById('input-time').value;
-        const location    = document.getElementById('input-location').value.trim();
-        const publicDesc  = document.getElementById('input-desc').value.trim();
-        const secretInfo  = document.getElementById('input-secret').value.trim();
+        const typeValue = document.getElementById('input-type').value;
+        const catValue = document.getElementById('input-category').value;
+        const name = document.getElementById('input-name').value.trim();
+        let timeRaw = document.getElementById('input-time').value;
+        const location = document.getElementById('input-location').value.trim();
+        const publicDesc = document.getElementById('input-desc').value.trim();
+        const secretInfo = document.getElementById('input-secret').value.trim();
 
         if (!name || !location || !secretInfo) {
             alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบ (ชื่อสิ่งของ, สถานที่, ข้อมูลลับ)');
@@ -151,10 +171,10 @@ function setupReportForm() {
         if (!timeRaw) {
             const now = new Date();
             timeRaw = now.getFullYear() + '-' +
-                      String(now.getMonth()+1).padStart(2,'0') + '-' +
-                      String(now.getDate()).padStart(2,'0') + ' ' +
-                      String(now.getHours()).padStart(2,'0') + ':' +
-                      String(now.getMinutes()).padStart(2,'0');
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0');
         }
 
         let imageUrl = '';
@@ -165,15 +185,15 @@ function setupReportForm() {
 
         const incidentDatetime = new Date(timeRaw.replace(/-/g, '/')).toISOString();
         const payload = {
-            item_type:          typeValue,
-            category:           catValue,
-            item_name:          name,
-            incident_datetime:  incidentDatetime,
-            location:           location,
-            public_details:     publicDesc,
-            secret_details:     secretInfo,
-            image_url:          imageUrl,
-            item_status:        'available'
+            item_type: typeValue,
+            category: catValue,
+            item_name: name,
+            incident_datetime: incidentDatetime,
+            location: location,
+            public_details: publicDesc,
+            secret_details: secretInfo,
+            image_url: imageUrl,
+            item_status: 'available'
         };
 
         const { error } = await supabaseClient.from('items').insert(payload);
@@ -185,9 +205,14 @@ function setupReportForm() {
             return;
         }
 
-        // แสดง success
-        reportForm.closest('.form-panel').style.display = 'none';
-        document.getElementById('success-alert').style.display = 'block';
+        // แสดง success โดยใช้ Modal
+        const successModal = document.getElementById('successModal');
+        if (successModal) {
+            successModal.style.display = 'flex';
+        } else {
+            alert('โพสต์สำเร็จแล้ว!');
+            window.location.href = 'index.html';
+        }
     });
 }
 
@@ -199,7 +224,9 @@ function resetSuccessAlert() {
     const d = document.getElementById('file-name-display');
     if (d) { d.textContent = 'คลิกหรือลากรูปมาวางที่นี่'; d.classList.remove('file-name-active'); }
 
-    document.getElementById('success-alert').style.display = 'none';
+    const successModal = document.getElementById('successModal');
+    if (successModal) successModal.style.display = 'none';
+    
     document.querySelector('.form-panel').style.display = 'block';
     setupTypeSelector();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -265,17 +292,17 @@ async function loadMyClaimsTab() {
         return;
     }
     const sMap = {
-        pending:  { label: '⏳ รอตรวจสอบ', color: '#ff9800', bg: 'rgba(255,152,0,0.1)' },
-        approved: { label: '✅ อนุมัติแล้ว',  color: '#4caf50', bg: 'rgba(76,175,80,0.1)'  },
-        rejected: { label: '❌ ถูกปฏิเสธ',   color: '#f44336', bg: 'rgba(244,67,54,0.1)'  }
+        pending: { label: '⏳ รอตรวจสอบ', color: '#ff9800', bg: 'rgba(255,152,0,0.1)' },
+        approved: { label: '✅ อนุมัติแล้ว', color: '#4caf50', bg: 'rgba(76,175,80,0.1)' },
+        rejected: { label: '❌ ถูกปฏิเสธ', color: '#f44336', bg: 'rgba(244,67,54,0.1)' }
     };
     let html = '';
     claims.forEach(claim => {
         const itm = claim.items;
         const s = sMap[claim.claim_status] || { label: claim.claim_status, color: '#aaa', bg: 'transparent' };
-        const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+        const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
         const d = new Date(claim.claim_datetime);
-        const dateStr = d.getDate() + ' ' + months[d.getMonth()] + ' ' + (d.getFullYear()+543);
+        const dateStr = d.getDate() + ' ' + months[d.getMonth()] + ' ' + (d.getFullYear() + 543);
         html += '<div style="background:#1e1e30;border:1px solid #2a2a42;border-radius:12px;padding:18px;margin-bottom:16px;">';
         html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">';
         html += '<div style="flex:1;"><h4 style="margin:0 0 6px;color:#fff;font-size:0.95rem;">' + (itm?.item_name || '-') + '</h4>';
@@ -303,8 +330,8 @@ function compressImage(file) {
                 const canvas = document.createElement('canvas');
                 const MAX = 800;
                 let w = img.width, h = img.height;
-                if (w > h) { if (w > MAX) { h *= MAX/w; w = MAX; } }
-                else       { if (h > MAX) { w *= MAX/h; h = MAX; } }
+                if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+                else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                 resolve(canvas.toDataURL('image/jpeg', 0.7));

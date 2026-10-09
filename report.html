@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แจ้งของพบ — Lost & Found</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/report.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/report.js" defer></script>
+    <script src="js/report.js?v=4" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
 </head>
+
+
 <body>
 
     <!-- ===== NAVBAR ===== -->
@@ -32,10 +36,12 @@
                 </div>
                 <div id="nav-profile" style="display: none; align-items: center; gap: 15px; margin-left: 30px;">
                     <div style="text-align: right; line-height: 1.2;">
-                        <span id="profile-name" style="font-weight: bold; font-size: 0.9rem; color: #fff;">ผู้ใช้งาน</span><br>
+                        <span id="profile-name"
+                            style="font-weight: bold; font-size: 0.9rem; color: #fff;">ผู้ใช้งาน</span><br>
                         <span id="profile-email" style="font-size: 0.75rem; color: #aaa;">email@up.ac.th</span>
                     </div>
-                    <button id="logout-btn" class="btn-outline" style="padding: 5px 15px; font-size: 0.8rem;">ออกจากระบบ</button>
+                    <button id="logout-btn" class="btn-outline"
+                        style="padding: 5px 15px; font-size: 0.8rem;">ออกจากระบบ</button>
                 </div>
             </div>
         </div>
@@ -47,10 +53,13 @@
             <div class="report-hero-icon">📢</div>
             <div>
                 <h1 class="report-hero-title">แจ้ง<span class="accent">ของที่พบ</span></h1>
-                <p class="report-hero-sub">คุณพบสิ่งของของผู้อื่น? กรอกข้อมูลให้ครบถ้วน เพื่อช่วยให้เจ้าของได้รับสิ่งของคืนโดยเร็ว</p>
+                <p class="report-hero-sub">คุณพบสิ่งของของผู้อื่น? กรอกข้อมูลให้ครบถ้วน
+                    เพื่อช่วยให้เจ้าของได้รับสิ่งของคืนโดยเร็ว</p>
             </div>
         </div>
     </div>
+
+
 
     <div class="report-container">
 
@@ -85,82 +94,88 @@
                                 <option value="electronics">📱 อุปกรณ์อิเล็กทรอนิกส์</option>
                                 <option value="documents">📄 เอกสาร/บัตร</option>
                                 <option value="accessories">👜 กระเป๋า/เครื่องประดับ</option>
+                                <option value="clothing">👕 เสื้อผ้า</option>
+                                <option value="keys">🔑 กุญแจ</option>
                                 <option value="others">📦 อื่นๆ</option>
                             </select>
                         </div>
                         <div class="form-group flex-2">
                             <label>ชื่อสิ่งของ <span class="required-mark">*</span></label>
-                            <input type="text" id="input-name" placeholder="เช่น กุญแจรถ, บัตรนิสิต, iPhone 15 Pro Max" required>
+                            <input type="text" id="input-name" placeholder="เช่น กุญแจรถ, บัตรนิสิต, iPhone 15 Pro Max"
+                                required>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-divider"></div>
+                    <div class="form-divider"></div>
 
-                <!-- Step 2 -->
-                <div class="form-step">
-                    <div class="step-label">
-                        <span class="step-num">2</span>
-                        สถานที่และเวลาที่เกิดเหตุ
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group flex-1">
-                            <label>📅 วันและเวลา</label>
-                            <input type="text" id="input-time" placeholder="คลิกเพื่อเลือกวันและเวลา...">
+                    <!-- Step 2 -->
+                    <div class="form-step">
+                        <div class="step-label">
+                            <span class="step-num">2</span>
+                            สถานที่และเวลาที่เกิดเหตุ
                         </div>
-                        <div class="form-group flex-1">
-                            <label>📍 สถานที่ <span class="required-mark">*</span></label>
-                            <input type="text" id="input-location" placeholder="เช่น หน้าตึก ICT, หอพักนิสิต 1, โรงอาหาร" required>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>📅 วันและเวลา</label>
+                                <input type="text" id="input-time" placeholder="คลิกเพื่อเลือกวันและเวลา...">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>📍 สถานที่ <span class="required-mark">*</span></label>
+                                <input type="text" id="input-location"
+                                    placeholder="เช่น หน้าตึก ICT, หอพักนิสิต 1, โรงอาหาร" required>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-divider"></div>
+                    <div class="form-divider"></div>
 
-                <!-- Step 3 -->
-                <div class="form-step">
-                    <div class="step-label">
-                        <span class="step-num">3</span>
-                        รายละเอียดสิ่งของ
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            📝 รายละเอียดสาธารณะ
-                            <span class="optional-mark">(ทุกคนมองเห็น — ไม่บังคับ)</span>
-                        </label>
-                        <textarea id="input-desc" rows="3" placeholder="ลักษณะภายนอกที่สังเกตได้ชัดเจน เช่น สี รูปร่าง ตราสินค้า..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>🔒 ข้อมูลลับเฉพาะ (BR-01) <span class="required-mark">*</span></label>
-                        <div class="secret-warning">
-                            ⚠️ ข้อมูลนี้ใช้ <strong>ตรวจสอบคำขอ Claim เท่านั้น</strong> — จะไม่ถูกเปิดเผยต่อสาธารณะ
+                    <!-- Step 3 -->
+                    <div class="form-step">
+                        <div class="step-label">
+                            <span class="step-num">3</span>
+                            รายละเอียดสิ่งของ
                         </div>
-                        <textarea id="input-secret" rows="3" placeholder="เช่น รหัสปลดล็อก, ตำหนิด้านใน, Serial Number, ชื่อในกระเป๋า..." required></textarea>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label>
+                                📝 รายละเอียดสาธารณะ
+                                <span class="optional-mark">(ทุกคนมองเห็น — ไม่บังคับ)</span>
+                            </label>
+                            <textarea id="input-desc" rows="3"
+                                placeholder="ลักษณะภายนอกที่สังเกตได้ชัดเจน เช่น สี รูปร่าง ตราสินค้า..."></textarea>
+                        </div>
 
-                <div class="form-divider"></div>
-
-                <!-- Step 4 -->
-                <div class="form-step">
-                    <div class="step-label">
-                        <span class="step-num">4</span>
-                        รูปภาพประกอบ <span class="optional-mark">(ไม่บังคับ)</span>
+                        <div class="form-group">
+                            <label>🔒 ข้อมูลลับเฉพาะ (BR-01) <span class="required-mark">*</span></label>
+                            <div class="secret-warning">
+                                ⚠️ ข้อมูลนี้ใช้ <strong>ตรวจสอบคำขอ Claim เท่านั้น</strong> — จะไม่ถูกเปิดเผยต่อสาธารณะ
+                            </div>
+                            <textarea id="input-secret" rows="3"
+                                placeholder="เช่น รหัสปลดล็อก, ตำหนิด้านใน, Serial Number, ชื่อในกระเป๋า..."
+                                required></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input type="file" id="input-image" accept="image/*" style="display: none;">
-                        <label for="input-image" class="custom-file-upload">
-                            <span class="upload-icon">📁</span>
-                            <span id="file-name-display" class="file-name-text">คลิกหรือลากรูปมาวางที่นี่</span>
-                            <span class="upload-hint">รองรับ JPG, PNG, WEBP — ขนาดไม่เกิน 5MB</span>
-                        </label>
-                    </div>
-                </div>
 
-                <!-- Submit -->
-                <div class="form-submit-area">
-                    <button type="submit" id="submit-btn" style="
+                    <div class="form-divider"></div>
+
+                    <!-- Step 4 -->
+                    <div class="form-step">
+                        <div class="step-label">
+                            <span class="step-num">4</span>
+                            รูปภาพประกอบ <span class="optional-mark">(ไม่บังคับ)</span>
+                        </div>
+                        <div class="form-group">
+                            <input type="file" id="input-image" accept="image/*" style="display: none;">
+                            <label for="input-image" class="custom-file-upload">
+                                <span class="upload-icon">📁</span>
+                                <span id="file-name-display" class="file-name-text">คลิกหรือลากรูปมาวางที่นี่</span>
+                                <span class="upload-hint">รองรับ JPG, PNG, WEBP — ขนาดไม่เกิน 5MB</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-submit-area">
+                        <button type="submit" id="submit-btn" style="
                         background: linear-gradient(135deg, #00c3ff 0%, #b026ff 100%);
                         color: #fff;
                         -webkit-text-fill-color: #fff;
@@ -175,23 +190,26 @@
                         box-shadow: 0 4px 20px rgba(176, 38, 255, 0.3);
                         transition: opacity 0.3s, transform 0.2s;
                     ">📤 โพสต์แจ้งข้อมูล</button>
-                    <p class="submit-note">ข้อมูลที่แจ้งจะแสดงในระบบทันทีหลังส่งสำเร็จ</p>
-                </div>
+                        <p class="submit-note">ข้อมูลที่แจ้งจะแสดงในระบบทันทีหลังส่งสำเร็จ</p>
+                    </div>
             </form>
         </div>
 
-        <!-- Success Message -->
-        <div id="success-alert" class="success-alert" style="display: none;">
-            <div class="success-icon">✅</div>
-            <h3>โพสต์สำเร็จแล้ว!</h3>
-            <p>ข้อมูลของคุณถูกบันทึกในระบบเรียบร้อย</p>
-            <div class="success-actions">
-                <a href="index.html" class="success-btn-primary">🏠 กลับหน้าหลัก</a>
-                <button onclick="resetSuccessAlert()" class="success-btn-sec">➕ แจ้งรายการเพิ่ม</button>
+        <!-- Success Modal -->
+        <div id="successModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); overflow: auto; align-items: center; justify-content: center;">
+            <div class="modal-content" style="background: var(--card-bg, #161625); border: 1px solid rgba(46, 213, 115, 0.3); border-radius: 16px; padding: 40px 30px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); max-width: 400px; width: 90%; margin: auto; margin-top: 15vh;">
+                <div style="font-size: 4rem; margin-bottom: 16px;">✅</div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.5rem; color: #2ed573;">โพสต์สำเร็จแล้ว!</h3>
+                <p style="color: #aaa; margin: 0 0 28px 0;">ข้อมูลของคุณถูกบันทึกในระบบเรียบร้อย</p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <a href="index.html" style="background: linear-gradient(135deg, #00c3ff 0%, #b026ff 100%); color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem;">🏠 กลับหน้าหลัก</a>
+                    <button onclick="resetSuccessAlert()" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color, #2a2a42); color: #aaa; padding: 12px 28px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.95rem;">➕ แจ้งรายการเพิ่ม</button>
+                </div>
             </div>
         </div>
 
     </div>
 
 </body>
+
 </html>

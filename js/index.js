@@ -75,6 +75,7 @@ async function loadItemsFromSupabase() {
     const { data: items, error } = await supabaseClient
         .from('items')
         .select('*')
+        .neq('item_status', 'approved')
         .order('incident_datetime', { ascending: false });
 
     if (error) {
@@ -101,6 +102,7 @@ function renderFeed(items) {
     if (countEl) countEl.textContent = (items?.length || 0) + ' รายการ';
 }
 
+
 function updateStats(items) {
     const total = items.length;
     const found = items.filter(i => i.item_type === 'Found').length;
@@ -124,10 +126,22 @@ function subscribeRealtime() {
             updateStats(allItems);
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'items' }, payload => {
-            const idx = allItems.findIndex(i => i.item_id === payload.new.item_id);
-            if (idx !== -1) allItems[idx] = payload.new;
-            const old = document.querySelector('.feed-grid .card[data-id="' + payload.new.item_id + '"]');
-            if (old) old.replaceWith(createCardFromDB(payload.new));
+            if (payload.new.item_status === 'approved') {
+                allItems = allItems.filter(i => i.item_id !== payload.new.item_id);
+                const oldCard = document.querySelector('.feed-grid .card[data-id="' + payload.new.item_id + '"]');
+                if (oldCard) oldCard.remove();
+            } else {
+                const idx = allItems.findIndex(i => i.item_id === payload.new.item_id);
+                if (idx !== -1) allItems[idx] = payload.new;
+                const old = document.querySelector('.feed-grid .card[data-id="' + payload.new.item_id + '"]');
+                if (old) old.replaceWith(createCardFromDB(payload.new));
+            }
+            updateStats(allItems);
+        })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'items' }, payload => {
+            allItems = allItems.filter(i => i.item_id !== payload.old.item_id);
+            const oldCard = document.querySelector('.feed-grid .card[data-id="' + payload.old.item_id + '"]');
+            if (oldCard) oldCard.remove();
             updateStats(allItems);
         })
         .subscribe();
@@ -140,6 +154,8 @@ const categoryMap = {
     electronics: '📱 อุปกรณ์อิเล็กทรอนิกส์',
     documents:   '📄 เอกสาร/บัตร',
     accessories: '👜 กระเป๋า/เครื่องประดับ',
+    clothing:    '👕 เสื้อผ้า',
+    keys:        '🔑 กุญแจ',
     others:      '📦 อื่นๆ'
 };
 
@@ -147,6 +163,8 @@ const categoryMapShort = {
     electronics: 'อิเล็กทรอนิกส์',
     documents:   'เอกสาร/บัตร',
     accessories: 'กระเป๋า',
+    clothing:    'เสื้อผ้า',
+    keys:        'กุญแจ',
     others:      'อื่นๆ'
 };
 
@@ -221,8 +239,13 @@ function filterCategory(categoryValue, tabEl) {
     const select = document.getElementById('search-category');
     if (select) select.value = categoryValue;
 
-    // อัปเดต cat-tab active state
-    if (tabEl) {
+    // อัปเดต showcase buttons active state
+    document.querySelectorAll('.cat-showcase-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === categoryValue);
+    });
+
+    // อัปเดต cat-tab active state (legacy)
+    if (tabEl && tabEl.classList.contains('cat-tab')) {
         document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
         tabEl.classList.add('active');
     }
@@ -265,6 +288,24 @@ function applyFilters() {
     const visible = document.querySelectorAll('.feed-grid .card:not([style*="none"])').length;
     const countEl = document.getElementById('feed-count');
     if (countEl) countEl.textContent = visible + ' รายการ';
+}
+
+function clearFilters() {
+    const searchText = document.getElementById('search-text');
+    const searchLoc  = document.getElementById('search-location');
+    const searchCat  = document.getElementById('search-category');
+    if (searchText) searchText.value = '';
+    if (searchLoc)  searchLoc.value  = '';
+    if (searchCat)  searchCat.value  = 'all';
+
+    document.querySelectorAll('.cat-showcase-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === 'all');
+    });
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    const allBtn = document.querySelector('.type-btn[data-type="all"]');
+    if (allBtn) allBtn.classList.add('active');
+
+    applyFilters();
 }
 
 // ==========================================
@@ -312,22 +353,45 @@ async function submitClaim() {
     if (!currentUser) { alert('กรุณาเข้าสู่ระบบก่อน'); closeModal(); window.location.href = 'login.html'; return; }
     if (!supabaseClient || !currentClaimItemId) return;
 
+    const btn = document.querySelector('#modalClaimSection .full-width-btn');
+    if (btn) {
+        btn.textContent = '⏳ กำลังส่งข้อมูล...';
+        btn.style.opacity = '0.7';
+        btn.style.pointerEvents = 'none';
+    }
+
     const { error } = await supabaseClient.from('claims').insert({
         item_id: currentClaimItemId,
         user_id: currentUser.id,
         proof_details: claimText,
         claim_status: 'pending'
     });
-    if (error) { alert('Error: ' + error.message); return; }
+
+    if (error) {
+        if (btn) {
+            btn.textContent = 'ยืนยันสิทธิ์';
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+        }
+        alert('เกิดข้อผิดพลาด: ' + error.message);
+        return;
+    }
 
     await supabaseClient.from('items').update({ item_status: 'pending' }).eq('item_id', currentClaimItemId);
     delete detailCache[currentClaimItemId];
 
-    // อัปเดต card บน feed โดยตรง
-    const idx = allItems.findIndex(i => i.item_id === currentClaimItemId);
-    if (idx !== -1) allItems[idx] = { ...allItems[idx], item_status: 'pending' };
-    const card = document.querySelector('.feed-grid .card[data-id="' + currentClaimItemId + '"]');
-    if (card) card.replaceWith(createCardFromDB(allItems[idx]));
+    const idx = allItems.findIndex(i => i.item_id == currentClaimItemId);
+    if (idx !== -1) {
+        allItems[idx] = { ...allItems[idx], item_status: 'pending' };
+        const card = document.querySelector('.feed-grid .card[data-id="' + currentClaimItemId + '"]');
+        if (card) card.replaceWith(createCardFromDB(allItems[idx]));
+    }
+
+    if (btn) {
+        btn.textContent = 'ยืนยันสิทธิ์';
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+    }
 
     closeModal();
     document.getElementById('successModal').style.display = 'block';

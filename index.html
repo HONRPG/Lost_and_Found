@@ -57,15 +57,65 @@
                     <span class="stat-num" id="stat-total">—</span>
                     <span class="stat-label">รายการทั้งหมด</span>
                 </div>
-                <div class="stat-pill stat-found">
-                    <span class="stat-num" id="stat-found">—</span>
-                    <span class="stat-label">สิ่งของที่พบ</span>
-                </div>
+
             </div>
         </div>
     </div>
 
+    <!-- ===== CATEGORY SHOWCASE ===== -->
+    <div class="category-showcase">
+        <div class="cat-showcase-inner">
+            <button class="cat-showcase-btn active" onclick="filterCategory('all', this)" data-cat="all">
+                <span class="cat-showcase-icon">🗂️</span>
+                <span class="cat-showcase-label">ทั้งหมด</span>
+            </button>
+            <button class="cat-showcase-btn" onclick="filterCategory('electronics', this)" data-cat="electronics">
+                <span class="cat-showcase-icon">📱</span>
+                <span class="cat-showcase-label">อิเล็กทรอนิกส์</span>
+            </button>
+            <button class="cat-showcase-btn" onclick="filterCategory('documents', this)" data-cat="documents">
+                <span class="cat-showcase-icon">📄</span>
+                <span class="cat-showcase-label">เอกสาร/บัตร</span>
+            </button>
+            <button class="cat-showcase-btn" onclick="filterCategory('accessories', this)" data-cat="accessories">
+                <span class="cat-showcase-icon">👜</span>
+                <span class="cat-showcase-label">กระเป๋า/เครื่องประดับ</span>
+            </button>
+            <button class="cat-showcase-btn" onclick="filterCategory('clothing', this)" data-cat="clothing">
+                <span class="cat-showcase-icon">👕</span>
+                <span class="cat-showcase-label">เสื้อผ้า</span>
+            </button>
+            <button class="cat-showcase-btn" onclick="filterCategory('keys', this)" data-cat="keys">
+                <span class="cat-showcase-icon">🔑</span>
+                <span class="cat-showcase-label">กุญแจ</span>
+            </button>
+            <button class="cat-showcase-btn" onclick="filterCategory('others', this)" data-cat="others">
+                <span class="cat-showcase-icon">📦</span>
+                <span class="cat-showcase-label">อื่นๆ</span>
+            </button>
+        </div>
+    </div>
+
     <div class="container">
+
+        <!-- ===== SEARCH & FILTER PANEL ===== -->
+        <div class="filter-panel">
+            <div class="filter-header">
+                <span class="filter-icon">🔍</span>
+                <span class="filter-title">ค้นหาและกรองรายการ</span>
+            </div>
+            <div class="search-row">
+                <div class="search-input-wrapper">
+                    <span class="search-icon-inner">🔍</span>
+                    <input type="text" id="search-text" class="search-input-main" placeholder="ค้นหาชื่อสิ่งของ..."
+                        oninput="applyFilters()">
+                </div>
+                <input type="text" id="search-location" class="filter-input" placeholder="📍 สถานที่..."
+                    oninput="applyFilters()">
+                <input type="hidden" id="search-category" value="all">
+            </div>
+
+        </div>
 
         <!-- ===== FEED SECTION ===== -->
         <div class="section-header">
@@ -106,6 +156,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- ===== MODAL รายละเอียด ===== -->
         <div id="itemModal" class="modal">

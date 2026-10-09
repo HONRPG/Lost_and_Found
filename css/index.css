@@ -2,6 +2,8 @@
    Index Page Styles — Lost & Found (Redesigned)
    ========================================== */
 
+
+
 /* ===== HERO SECTION ===== */
 .hero-section {
     background: linear-gradient(135deg, #13102a 0%, #1a1035 50%, #0f1a2e 100%);
@@ -115,6 +117,86 @@
 /* ===== CONTAINER ===== */
 .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px 60px; }
 
+/* ===== CATEGORY SHOWCASE ===== */
+.category-showcase {
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.category-showcase::-webkit-scrollbar { display: none; }
+
+.cat-showcase-inner {
+    display: flex;
+    gap: 0;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.cat-showcase-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px 22px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: 'Prompt', sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.cat-showcase-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 3px;
+    background: var(--primary-gradient);
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+    border-radius: 3px 3px 0 0;
+}
+
+.cat-showcase-btn:hover::after,
+.cat-showcase-btn.active::after { transform: scaleX(1); }
+
+.cat-showcase-btn:hover .cat-showcase-icon,
+.cat-showcase-btn.active .cat-showcase-icon {
+    transform: scale(1.2);
+}
+
+.cat-showcase-btn:hover .cat-showcase-label,
+.cat-showcase-btn.active .cat-showcase-label {
+    color: #00c3ff;
+}
+
+.cat-showcase-btn.active {
+    border-bottom-color: transparent;
+}
+
+.cat-showcase-icon {
+    font-size: 1.6rem;
+    transition: transform 0.25s ease;
+    display: block;
+    line-height: 1;
+}
+
+.cat-showcase-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: color 0.25s ease;
+    letter-spacing: 0.2px;
+}
+
 /* ===== FILTER PANEL ===== */
 .filter-panel {
     background: var(--card-bg);
@@ -134,6 +216,33 @@
 
 .filter-icon { font-size: 1.1rem; }
 .filter-title { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; }
+
+.filter-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.clear-filter-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'Prompt', sans-serif;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.clear-filter-btn:hover {
+    border-color: #ff4757;
+    color: #ff4757;
+    background: rgba(255,71,87,0.08);
+}
 
 .search-row {
     display: flex;

@@ -143,7 +143,9 @@ async function approveClaim(claimId, itemId) {
     if (!supabaseClient) return;
     const { error: ce } = await supabaseClient.from('claims').update({ claim_status: 'approved' }).eq('claim_id', claimId);
     if (ce) { alert('เกิดข้อผิดพลาด: ' + ce.message); return; }
-    if (itemId) await supabaseClient.from('items').update({ item_status: 'approved' }).eq('item_id', itemId);
+    if (itemId) {
+        await supabaseClient.from('items').update({ item_status: 'approved' }).eq('item_id', itemId);
+    }
     showToast('✅ อนุมัติคำขอเรียบร้อยแล้ว');
     await loadClaims();
     filterClaims(currentFilter);

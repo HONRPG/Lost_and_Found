@@ -2,6 +2,62 @@
    Report Page Styles — Lost & Found
    ========================================== */
 
+/* ===== CATEGORY PICKER (in form) ===== */
+.cat-picker {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cat-pick-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Prompt', sans-serif;
+    flex: 1;
+    min-width: 80px;
+}
+
+.cat-pick-btn:hover {
+    background: rgba(0,195,255,0.08);
+    border-color: rgba(0,195,255,0.4);
+    transform: translateY(-2px);
+}
+
+.cat-pick-btn.active {
+    background: linear-gradient(135deg, rgba(0,195,255,0.15), rgba(176,38,255,0.15));
+    border-color: #00c3ff;
+    box-shadow: 0 4px 16px rgba(0,195,255,0.15);
+    transform: translateY(-2px);
+}
+
+.cat-pick-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.cat-pick-btn.active .cat-pick-icon,
+.cat-pick-btn:hover .cat-pick-icon { transform: scale(1.15); }
+
+.cat-pick-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.cat-pick-btn.active .cat-pick-label { color: #00c3ff; }
+
+
 /* ===== HERO ===== */
 .report-hero {
     background: linear-gradient(135deg, #13102a 0%, #1a1035 50%, #0f1a2e 100%);
